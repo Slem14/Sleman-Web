@@ -13,54 +13,47 @@
 }
 
 body {
-    background: #0d1117;
+    background: #0a0f14;
     color: #c9d1d9;
-    font-family: "Courier New", monospace;
+    font-family: "JetBrains Mono", monospace;
     height: 100vh;
-    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-/* BACKGROUND GRID */
+/* subtle animated background */
 body::before {
     content: "";
     position: absolute;
     width: 100%;
     height: 100%;
-    background-image: linear-gradient(#161b22 1px, transparent 1px),
-                      linear-gradient(90deg, #161b22 1px, transparent 1px);
-    background-size: 40px 40px;
+    background: radial-gradient(circle at 20% 30%, rgba(88,166,255,0.05), transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(230,57,70,0.05), transparent 40%);
     z-index: 0;
 }
 
-/* CONTAINER */
-.container {
+/* main card */
+.card {
     position: relative;
     z-index: 1;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-/* CARD */
-.card {
-    background: rgba(22, 27, 34, 0.85);
+    background: rgba(13,17,23,0.85);
     border: 1px solid #30363d;
     border-radius: 12px;
     padding: 50px;
-    width: 400px;
-    backdrop-filter: blur(10px);
+    width: 420px;
+    backdrop-filter: blur(12px);
     box-shadow: 0 0 40px rgba(0,0,0,0.6);
 }
 
-/* TITLE */
+/* name */
 h1 {
-    font-size: 32px;
-    margin-bottom: 10px;
+    font-size: 34px;
     color: white;
+    margin-bottom: 10px;
 }
 
-/* TYPING EFFECT */
+/* typing line */
 .typing {
     color: #58a6ff;
     margin-bottom: 25px;
@@ -79,54 +72,63 @@ h1 {
     50% { border-color: transparent; }
 }
 
-/* LINKS */
+/* divider */
+.divider {
+    height: 1px;
+    background: #21262d;
+    margin: 20px 0;
+}
+
+/* links */
 .links a {
     display: block;
-    margin: 12px 0;
+    margin: 10px 0;
     color: #c9d1d9;
     text-decoration: none;
-    transition: 0.3s;
-    padding: 8px;
+    padding: 10px;
     border-radius: 6px;
+    transition: 0.25s;
 }
 
 .links a:hover {
-    background: #21262d;
+    background: #161b22;
     color: #58a6ff;
     transform: translateX(5px);
 }
 
-/* FOOTER */
+/* footer text */
 .footer {
     margin-top: 20px;
-    font-size: 12px;
+    font-size: 13px;
     color: #8b949e;
+    line-height: 1.5;
 }
 </style>
 </head>
 
 <body>
 
-<div class="container">
-    <div class="card">
+<div class="card">
 
-        <h1>Sleman Parwiz</h1>
+    <h1>Sleman Parwiz</h1>
 
-        <div class="typing">
-            Informatik Student @ Hochschule Anhalt
-        </div>
-
-        <div class="links">
-            <a href="https://www.linkedin.com/in/sleman-parwiz-532541307/" target="_blank">→ LinkedIn</a>
-            <a href="https://www.instagram.com/slem_1312" target="_blank">→ Instagram</a>
-            <a href="https://x.com/Sleman_P" target="_blank">→ Twitter (X)</a>
-        </div>
-
-        <div class="footer">
-            > building things & learning systems
-        </div>
-
+    <div class="typing">
+        Informatik @ Hochschule Anhalt
     </div>
+
+    <div class="divider"></div>
+
+    <div class="links">
+        <a href="https://www.linkedin.com/in/sleman-parwiz-532541307/" target="_blank">→ LinkedIn</a>
+        <a href="https://www.instagram.com/slem_1312" target="_blank">→ Instagram</a>
+        <a href="https://x.com/Sleman_P" target="_blank">→ Twitter (X)</a>
+    </div>
+
+    <div class="footer">
+        building skills, staying focused, chasing results.<br>
+        consistency over hype.
+    </div>
+
 </div>
 
 </body>
