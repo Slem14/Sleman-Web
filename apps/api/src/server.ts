@@ -5,6 +5,7 @@ import Fastify, { type FastifyInstance } from "fastify";
 import { randomUUID } from "node:crypto";
 import type { ApiConfig } from "./config.js";
 import { AnthropicProvider } from "./providers/anthropic/adapter.js";
+import { GeminiProvider } from "./providers/gemini/adapter.js";
 import { StubProvider } from "./providers/stub.js";
 import type { DocumentAnalysisProvider } from "./providers/types.js";
 import { registerAnalysesRoute } from "./routes/analyses.js";
@@ -58,6 +59,17 @@ function buildProvider(config: ApiConfig): DocumentAnalysisProvider {
         baseUrl: settings.baseUrl,
         // Leave headroom under the request timeout so a slow provider surfaces
         // as a provider error rather than a dropped connection.
+        timeoutMs: Math.max(5000, config.requestTimeoutMs - 2000),
+      });
+    }
+    case "gemini": {
+      const settings = config.gemini;
+      if (settings === undefined) {
+        throw new Error("gemini provider selected without credentials");
+      }
+      return new GeminiProvider({
+        apiKey: settings.apiKey,
+        model: settings.model,
         timeoutMs: Math.max(5000, config.requestTimeoutMs - 2000),
       });
     }

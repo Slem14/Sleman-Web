@@ -10,13 +10,17 @@ export interface ApiConfig {
   /** Exact browser origin allowed by CORS — deny-by-default (TB-1). */
   webOrigin: string;
   /** Which DocumentAnalysisProvider implementation to use. */
-  provider: "stub" | "anthropic";
+  provider: "stub" | "anthropic" | "gemini";
   /** Credentials and model for the real provider (absent when using the stub). */
   anthropic?: {
     apiKey: string;
     model: string;
     /** Set only when routing through a gateway rather than the Anthropic API. */
     baseUrl?: string | undefined;
+  };
+  gemini?: {
+    apiKey: string;
+    model: string;
   };
   /** Max analysis requests per client per minute (anti-abuse, §19). */
   rateLimitMax: number;
@@ -26,7 +30,7 @@ export interface ApiConfig {
 
 const LOG_LEVELS = new Set(["fatal", "error", "warn", "info", "debug"]);
 const NODE_ENVS = new Set(["development", "test", "production"]);
-const PROVIDERS = new Set(["stub", "anthropic"]);
+const PROVIDERS = new Set(["stub", "anthropic", "gemini"]);
 
 export function loadConfig(env: NodeJS.ProcessEnv = process.env): ApiConfig {
   const port = Number(env.API_PORT ?? 3001);
@@ -85,6 +89,17 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): ApiConfig {
       apiKey,
       model: env.ANALYSIS_MODEL ?? "claude-haiku-4-5",
       baseUrl: env.ANTHROPIC_BASE_URL,
+    };
+  }
+
+  if (config.provider === "gemini") {
+    const apiKey = env.GEMINI_API_KEY ?? "";
+    if (apiKey === "") {
+      throw new Error("ANALYSIS_PROVIDER=gemini requires GEMINI_API_KEY");
+    }
+    config.gemini = {
+      apiKey,
+      model: env.ANALYSIS_MODEL ?? "gemini-2.5-flash",
     };
   }
 
