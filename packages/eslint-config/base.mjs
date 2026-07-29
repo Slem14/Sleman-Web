@@ -43,9 +43,11 @@ export default tseslint.config(
     extends: [tseslint.configs.disableTypeChecked],
   },
   {
-    // Build/verification scripts are CLI tools: printing to stdout is their
-    // purpose, unlike application code where logging is a privacy control.
-    files: ["**/scripts/**"],
+    // Build scripts and evaluation runners are CLI tools: printing to stdout
+    // is their purpose, unlike application code where logging is a privacy
+    // control. Evaluation runners only ever handle synthetic fixtures, so
+    // there is no user content that could be printed.
+    files: ["**/scripts/**", "**/evals/**"],
     rules: { "no-console": "off" },
   },
   prettier,
