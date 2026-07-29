@@ -1,5 +1,5 @@
 import { getMessages, isLocale } from "@wg/i18n";
-import { Alert, Button, Card, Steps } from "@wg/ui";
+import { Alert, ButtonLink, Card, Steps } from "@wg/ui";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { HeroMock } from "./hero-mock";
@@ -22,13 +22,11 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
           </p>
 
           <div className="mt-9 flex flex-col sm:flex-row gap-3 sm:items-center">
-            {/* Upload arrives in Stage 3 — honest disabled state, no fake door. */}
-            <Button size="lg" disabled aria-describedby="upload-coming-soon">
+            {/* Leads to the upload page, which states honestly whether the
+                analysis service is switched on in this deployment. */}
+            <ButtonLink href={`/${locale}/upload/`} size="lg">
               {m.home.uploadCta}
-            </Button>
-            <p id="upload-coming-soon" className="text-sm text-ink-muted max-w-xs">
-              {m.home.uploadComingSoon}
-            </p>
+            </ButtonLink>
           </div>
         </div>
 

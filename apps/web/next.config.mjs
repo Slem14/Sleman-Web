@@ -2,7 +2,7 @@
 const nextConfig = {
   poweredByHeader: false,
   reactStrictMode: true,
-  transpilePackages: ["@wg/ui", "@wg/i18n"],
+  transpilePackages: ["@wg/ui", "@wg/i18n", "@wg/validation"],
   // Fully static export: the frontend is SSG by design (no server features);
   // it deploys to GitHub Pages for now and any static host later. The API
   // (Stage 3+) is a separate service — the trust boundary stays intact.
