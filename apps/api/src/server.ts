@@ -9,6 +9,7 @@ import { GeminiProvider } from "./providers/gemini/adapter.js";
 import { StubProvider } from "./providers/stub.js";
 import type { DocumentAnalysisProvider } from "./providers/types.js";
 import { registerAnalysesRoute } from "./routes/analyses.js";
+import { registerQuestionsRoute } from "./routes/questions.js";
 
 /**
  * Log redaction is a privacy control, not a formatting choice (data class C3
@@ -34,6 +35,8 @@ export interface WgRequestMeta {
   safetyViolations?: number;
   /** How many risk flags the keyword layer added on top of the model's. */
   escalatedFlags?: number;
+  /** How many prior exchanges a follow-up carried — a count, never content. */
+  historyLength?: number;
 }
 
 declare module "fastify" {
@@ -136,7 +139,11 @@ export async function buildServer(
     return { status: "ready" };
   });
 
-  registerAnalysesRoute(app, config, buildProvider(config));
+  // One provider instance shared by both routes — the same document goes to
+  // the same place whether it is being summarised or asked about.
+  const provider = buildProvider(config);
+  registerAnalysesRoute(app, config, provider);
+  registerQuestionsRoute(app, config, provider);
 
   // One structured C2 event per request — the ONLY operational trace an
   // analysis leaves behind (docs/privacy/data-classification.md table).

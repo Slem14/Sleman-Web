@@ -1,7 +1,14 @@
-import { parseDocumentAnalysis, type DocumentAnalysis } from "@wg/validation";
+import {
+  parseDocumentAnalysis,
+  parseQuestionAnswer,
+  type AllowedMimeType,
+  type DocumentAnalysis,
+  type QuestionAnswer,
+} from "@wg/validation";
 import { buildOutputContract } from "../anthropic/output-contract.js";
 import { PROMPT_VERSION, buildSystemPrompt } from "../anthropic/prompt.js";
-import type { AnalysisInput, DocumentAnalysisProvider } from "../types.js";
+import { buildQuestionPrompt } from "../anthropic/question-prompt.js";
+import type { AnalysisInput, DocumentAnalysisProvider, QuestionInput } from "../types.js";
 import { ProviderError } from "../types.js";
 
 /**
@@ -84,7 +91,11 @@ export class GeminiProvider implements DocumentAnalysisProvider {
 
     let correction = "";
     for (let attempt = 0; attempt < 2; attempt += 1) {
-      const raw = await this.callModel(system, input, correction);
+      const instruction =
+        correction === ""
+          ? "Analyse the attached German letter and return the JSON object."
+          : `${correction}\n\nAnalyse the attached German letter again and return only the JSON object.`;
+      const raw = await this.callModel(system, input, instruction);
       const analysis = parseDocumentAnalysis(extractJson(raw));
       if (analysis !== null) return analysis;
 
@@ -98,15 +109,35 @@ export class GeminiProvider implements DocumentAnalysisProvider {
     throw new ProviderError("invalid_output", "analysis did not satisfy the schema");
   }
 
+  async answerQuestion(input: QuestionInput): Promise<QuestionAnswer> {
+    const system = buildQuestionPrompt(input.outputLanguage, input.history);
+
+    let correction = "";
+    for (let attempt = 0; attempt < 2; attempt += 1) {
+      // The user's question is passed as data alongside the document, not
+      // concatenated into the system prompt — same separation as the letter.
+      const raw = await this.callModel(
+        system,
+        { fileBytes: input.fileBytes, mimeType: input.mimeType },
+        `${correction}The person asks: ${input.question}`,
+      );
+      const answer = parseQuestionAnswer(extractJson(raw));
+      if (answer !== null) return answer;
+
+      correction =
+        "Your previous response did not match the required JSON object. Return only the JSON " +
+        "object described above, with evidence present whenever answeredFromDocument is true. ";
+    }
+
+    throw new ProviderError("invalid_output", "answer did not satisfy the schema");
+  }
+
   private async callModel(
     system: string,
-    input: AnalysisInput,
-    correction: string,
+    input: { fileBytes: Buffer; mimeType: AllowedMimeType },
+    instructionText: string,
   ): Promise<string> {
-    const instruction =
-      correction === ""
-        ? "Analyse the attached German letter and return the JSON object."
-        : `${correction}\n\nAnalyse the attached German letter again and return only the JSON object.`;
+    const instruction = instructionText;
 
     const body = {
       system_instruction: { parts: [{ text: system }] },

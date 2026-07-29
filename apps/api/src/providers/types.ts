@@ -1,4 +1,9 @@
-import type { AllowedMimeType, DocumentAnalysis } from "@wg/validation";
+import type {
+  AllowedMimeType,
+  DocumentAnalysis,
+  PriorExchange,
+  QuestionAnswer,
+} from "@wg/validation";
 
 /**
  * Provider abstraction (ADR 0004): the application depends on this interface
@@ -18,10 +23,29 @@ export interface AnalysisInput {
   requestId: string;
 }
 
+/**
+ * A follow-up question about a document the user already uploaded.
+ *
+ * The document is re-sent with every question rather than held server-side.
+ * That is the whole reason the promise "we keep nothing" survives this
+ * feature: the browser owns the file for as long as the user keeps the page
+ * open, and the API stays stateless between requests.
+ */
+export interface QuestionInput {
+  fileBytes: Buffer;
+  mimeType: AllowedMimeType;
+  outputLanguage: string;
+  requestId: string;
+  question: string;
+  /** Earlier exchanges in this conversation, replayed by the browser. */
+  history: PriorExchange[];
+}
+
 export interface DocumentAnalysisProvider {
   /** Short identifier recorded in operational logs (C2 data). */
   readonly name: string;
   analyze(input: AnalysisInput): Promise<DocumentAnalysis>;
+  answerQuestion(input: QuestionInput): Promise<QuestionAnswer>;
 }
 
 /** Typed failure taxonomy so routes map problems to stable error codes. */

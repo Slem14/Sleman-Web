@@ -1,13 +1,25 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
+import { SITE_URL } from "../site";
 import { fontVariables } from "../fonts";
 import { THEME_INIT_SCRIPT } from "../theme";
 import "../globals.css";
 
 export const metadata: Metadata = {
-  title: "Welcome Germany — Choose your language",
-  description: "Understand your German letters — in your language.",
-  robots: { index: false, follow: false }, // pre-launch
+  metadataBase: new URL(SITE_URL),
+  title: "Welcome Germany — Understand your German letters",
+  description:
+    "Upload a photo of a German official letter and get a clear explanation in your language: who sent it, what it asks you to do, and by when. Free, no account, nothing stored.",
+  robots: { index: true, follow: true },
+  alternates: { canonical: `${SITE_URL}/` },
+  openGraph: {
+    type: "website",
+    url: `${SITE_URL}/`,
+    siteName: "Welcome Germany",
+    title: "Welcome Germany — Understand your German letters",
+    description:
+      "Upload a photo of a German official letter and get a clear explanation in your language.",
+  },
 };
 
 export const viewport: Viewport = {

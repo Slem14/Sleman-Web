@@ -51,10 +51,9 @@ export default async function UploadPage({ params }: { params: Promise<{ locale:
           </Alert>
         ) : (
           <>
-            {/* While the deployment runs on a free provider tier, the page
-                must contradict the privacy notice's no-training promise
-                rather than let a user act on it. Removed when a reviewed
-                provider agreement is in place (see the Stage 8 gates). */}
+            {/* Set NEXT_PUBLIC_TEST_MODE=true to warn users that the current
+                provider tier does not guarantee the privacy notice's
+                no-training promise. */}
             {isTestMode ? (
               <Alert tone="warning" title={m.testModeTitle}>
                 {m.testModeText}

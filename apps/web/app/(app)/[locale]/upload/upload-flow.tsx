@@ -35,7 +35,14 @@ export function UploadFlow({
   const [analysis, setAnalysis] = useState<DocumentAnalysis | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  /** Return to a clean slate — also the user-facing "delete" action. */
+  /**
+   * Return to a clean slate — this is the user-facing "delete" action.
+   *
+   * Because the server never held the document or the conversation, dropping
+   * these references is genuinely the whole deletion: there is nowhere else
+   * for a copy to be. The file input is cleared too, so the browser stops
+   * holding the selection.
+   */
   const reset = () => {
     setPhase("idle");
     setFile(null);
@@ -128,7 +135,19 @@ export function UploadFlow({
             : "";
 
   if (phase === "done" && analysis !== null) {
-    return <AnalysisResult analysis={analysis} m={m} onReset={reset} liveMessage={liveMessage} />;
+    return (
+      <AnalysisResult
+        analysis={analysis}
+        m={m}
+        locale={locale}
+        apiBaseUrl={apiBaseUrl}
+        // Kept in memory so follow-up questions can re-send it; cleared by
+        // reset(), which is what makes "delete" actually delete.
+        file={file}
+        onReset={reset}
+        liveMessage={liveMessage}
+      />
+    );
   }
 
   return (

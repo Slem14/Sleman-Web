@@ -1,5 +1,11 @@
-import { SCHEMA_VERSION, parseDocumentAnalysis, type DocumentAnalysis } from "@wg/validation";
-import type { AnalysisInput, DocumentAnalysisProvider } from "./types.js";
+import {
+  SCHEMA_VERSION,
+  parseDocumentAnalysis,
+  parseQuestionAnswer,
+  type DocumentAnalysis,
+  type QuestionAnswer,
+} from "@wg/validation";
+import type { AnalysisInput, DocumentAnalysisProvider, QuestionInput } from "./types.js";
 import { ProviderError } from "./types.js";
 
 /**
@@ -107,5 +113,23 @@ export class StubProvider implements DocumentAnalysisProvider {
       return Promise.reject(new ProviderError("invalid_output", "stub produced invalid analysis"));
     }
     return Promise.resolve(parsed);
+  }
+
+  answerQuestion(input: QuestionInput): Promise<QuestionAnswer> {
+    const answer = parseQuestionAnswer({
+      answer:
+        input.outputLanguage === "prs"
+          ? "این یک جواب نمایشی است. نامه می‌گوید که اسناد باید تا ۱۵ اگست ۲۰۲۶ تحویل داده شوند."
+          : "This is a demonstration answer. The letter says the documents must be handed in by 15 August 2026.",
+      answeredFromDocument: true,
+      evidence: [{ page: 1, text: "bis zum 15. August 2026" }],
+      outOfScope: false,
+      limitations: ["This is a demonstration answer produced by the stub provider."],
+    });
+
+    if (answer === null) {
+      return Promise.reject(new ProviderError("invalid_output", "stub produced invalid answer"));
+    }
+    return Promise.resolve(answer);
   }
 }

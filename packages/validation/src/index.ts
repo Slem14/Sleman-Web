@@ -16,6 +16,15 @@ export type {
 } from "./document-analysis.js";
 
 export {
+  questionAnswerSchema,
+  priorExchangeSchema,
+  parseQuestionAnswer,
+  MAX_PRIOR_EXCHANGES,
+  MAX_QUESTION_LENGTH,
+} from "./question-answer.js";
+export type { QuestionAnswer, PriorExchange } from "./question-answer.js";
+
+export {
   MAX_FILE_BYTES,
   MAX_PDF_PAGES,
   MAX_IMAGE_PIXELS,

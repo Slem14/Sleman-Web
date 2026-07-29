@@ -45,12 +45,18 @@ if (existsSync(join(OUT_DIR, "404.html"))) {
   check("404.html does not contain the custom message", notFound.includes("Page not found"));
 }
 
-// 3. Pre-launch: pages must not be indexable.
+// 3. The site is public: search engines must be able to find it, and each
+//    page must declare a canonical URL so the two locales are not treated as
+//    duplicates of one another.
+check("robots.txt is missing", existsSync(join(OUT_DIR, "robots.txt")));
+check("sitemap.xml is missing", existsSync(join(OUT_DIR, "sitemap.xml")));
+
 for (const page of ["index.html", "en/index.html", "prs/index.html"]) {
   const file = join(OUT_DIR, page);
   if (!existsSync(file)) continue;
   const html = readFileSync(file, "utf8");
-  check(`${page} is missing noindex`, html.includes("noindex"));
+  check(`${page} still carries noindex`, !html.includes("noindex"));
+  check(`${page} is missing a canonical link`, html.includes('rel="canonical"'));
 }
 
 // 4. Privacy: no third-party origins referenced from any page (fonts are

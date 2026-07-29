@@ -4,6 +4,7 @@ import type { Metadata, Viewport } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
+import { SITE_URL } from "../../site";
 import { fontVariables } from "../../fonts";
 import { THEME_INIT_SCRIPT, ThemeToggle } from "../../theme";
 import "../../globals.css";
@@ -22,10 +23,26 @@ export async function generateMetadata({
   const { locale } = await params;
   if (!isLocale(locale)) return {};
   const m = getMessages(locale);
+  const canonical = `${SITE_URL}/${locale}/`;
   return {
+    metadataBase: new URL(SITE_URL),
     title: { default: m.common.appName, template: `%s — ${m.common.appName}` },
     description: m.common.tagline,
-    robots: { index: false, follow: false }, // pre-launch
+    robots: { index: true, follow: true },
+    alternates: {
+      canonical,
+      // Tell search engines the two locales are the same page in different
+      // languages, so a Dari speaker is offered the Dari version.
+      languages: Object.fromEntries(LOCALES.map((l) => [l, `${SITE_URL}/${l}/`])),
+    },
+    openGraph: {
+      type: "website",
+      url: canonical,
+      siteName: m.common.appName,
+      title: m.common.appName,
+      description: m.common.tagline,
+      locale,
+    },
   };
 }
 

@@ -1,29 +1,38 @@
 "use client";
 
-import type { Messages } from "@wg/i18n";
-import type { DocumentAnalysis, EvidenceReference } from "@wg/validation";
+import type { Locale, Messages } from "@wg/i18n";
+import type { DocumentAnalysis } from "@wg/validation";
 import { Alert, Button, Card } from "@wg/ui";
+import { AskPanel } from "./ask-panel";
+import { Evidence } from "./evidence";
 
 type UploadMessages = Messages["upload"];
 
 /**
- * Minimal result view for Stage 3 — enough to prove the whole pipeline works
- * end to end. The polished result experience (urgency treatment, high-risk
- * presentation, reply draft) arrives in Stage 5.
+ * The result view.
  *
- * Two rules already hold here and must never regress:
+ * Two rules hold throughout and must never regress:
  *  1. Every claim can be traced to its German source text.
- *  2. Model output is rendered as TEXT only — never as HTML — so a malicious
+ *  2. Model output renders as TEXT only — never as HTML — so a malicious
  *     document cannot inject markup through the analysis (master-spec §10).
+ *
+ * Everything the analysis found is shown. A section the letter did not
+ * support simply does not appear; nothing is summarised away.
  */
 export function AnalysisResult({
   analysis,
   m,
+  locale,
+  apiBaseUrl,
+  file,
   onReset,
   liveMessage,
 }: {
   analysis: DocumentAnalysis;
   m: UploadMessages;
+  locale: Locale;
+  apiBaseUrl: string;
+  file: File | null;
   onReset: () => void;
   liveMessage: string;
 }) {
@@ -33,9 +42,17 @@ export function AnalysisResult({
         {liveMessage}
       </p>
 
+      {/* Serious letters lead with the escalation, before anything the reader
+          might mistake for reassurance. */}
+      {analysis.requiresHumanReview ? (
+        <Alert tone="warning" title={m.seriousTitle}>
+          <p>{analysis.humanReviewReason ?? m.seriousLead}</p>
+          <p className="mt-2">{m.seriousLead}</p>
+        </Alert>
+      ) : null}
+
       <h2 className="text-2xl font-bold text-ink">{m.resultTitle}</h2>
 
-      {/* Sender and document type */}
       <Card>
         <dl className="grid gap-4 sm:grid-cols-2">
           <div>
@@ -52,10 +69,14 @@ export function AnalysisResult({
             <dd className="mt-1 font-semibold text-ink">{analysis.documentType.label}</dd>
           </div>
         </dl>
-        <p className="mt-5 text-ink leading-relaxed">{analysis.summary.plainLanguage}</p>
+        {/* whitespace-pre-line: the summary is now multi-paragraph, and the
+            paragraph breaks the model writes are meaningful structure. */}
+        <p className="mt-5 text-ink leading-relaxed whitespace-pre-line">
+          {analysis.summary.plainLanguage}
+        </p>
+        <Evidence evidence={analysis.summary.evidence} label={m.originalGerman} />
       </Card>
 
-      {/* Deadlines: normalized date next to the untouched German wording. */}
       {analysis.deadlines.map((deadline) => (
         <Card key={deadline.rawText} tone="raised">
           <h3 className="font-mono text-xs uppercase tracking-wider text-ink-muted">
@@ -63,11 +84,15 @@ export function AnalysisResult({
           </h3>
           <p className="mt-2 text-2xl font-bold text-ink">{deadline.normalizedDate ?? "—"}</p>
           <p className="mt-1 text-ink-muted">{deadline.meaning}</p>
+          {/* The German wording is shown even when a date could not be
+              normalised — it is the authoritative version either way. */}
+          <p dir="ltr" lang="de" className="mt-2 font-mono text-sm text-ink-muted">
+            {deadline.rawText}
+          </p>
           <Evidence evidence={deadline.evidence} label={m.originalGerman} />
         </Card>
       ))}
 
-      {/* Requested actions */}
       {analysis.requestedActions.length > 0 ? (
         <Card>
           <h3 className="font-semibold text-ink">{m.actionsTitle}</h3>
@@ -82,7 +107,6 @@ export function AnalysisResult({
         </Card>
       ) : null}
 
-      {/* Requested documents */}
       {analysis.requestedDocuments.length > 0 ? (
         <Card>
           <h3 className="font-semibold text-ink">{m.documentsTitle}</h3>
@@ -97,13 +121,43 @@ export function AnalysisResult({
         </Card>
       ) : null}
 
-      {/* Next steps: document-grounded and general advice stay distinguishable. */}
+      {analysis.consequences.length > 0 ? (
+        <Card>
+          <h3 className="font-semibold text-ink">{m.consequencesTitle}</h3>
+          <ul className="mt-3 space-y-4">
+            {analysis.consequences.map((consequence) => (
+              <li key={consequence.description}>
+                <p className="text-ink leading-relaxed">{consequence.description}</p>
+                <Evidence evidence={consequence.evidence} label={m.originalGerman} />
+              </li>
+            ))}
+          </ul>
+        </Card>
+      ) : null}
+
+      {analysis.contactDetails.length > 0 ? (
+        <Card>
+          <h3 className="font-semibold text-ink">{m.contactTitle}</h3>
+          <ul className="mt-3 space-y-3">
+            {analysis.contactDetails.map((contact) => (
+              // Contact values are copied from the letter and verified against
+              // its evidence server-side; LTR so numbers read correctly.
+              <li key={contact.value} dir="ltr" className="font-mono text-sm text-ink break-all">
+                {contact.value}
+              </li>
+            ))}
+          </ul>
+        </Card>
+      ) : null}
+
       {analysis.suggestedNextSteps.length > 0 ? (
         <Card>
           <h3 className="font-semibold text-ink">{m.nextStepsTitle}</h3>
           <ul className="mt-3 space-y-3">
             {analysis.suggestedNextSteps.map((step) => (
               <li key={step.description} className="text-ink leading-relaxed">
+                {/* Which advice comes from the authority and which from us is
+                    never blurred — the reader needs to know the difference. */}
                 <span className="me-2 inline-block rounded-sm bg-raised px-2 py-0.5 font-mono text-[0.65rem] uppercase tracking-wider text-ink-muted align-middle">
                   {step.basis === "document" ? m.basisDocument : m.basisGeneral}
                 </span>
@@ -114,40 +168,38 @@ export function AnalysisResult({
         </Card>
       ) : null}
 
-      {/* AI transparency is shown with the result, never buried in terms. */}
+      {analysis.limitations.length > 0 ? (
+        <Card>
+          <h3 className="font-semibold text-ink">{m.limitationsTitle}</h3>
+          <ul className="mt-3 space-y-2">
+            {analysis.limitations.map((limitation) => (
+              <li
+                key={limitation}
+                className="flex gap-3 items-start text-ink-muted leading-relaxed"
+              >
+                <span
+                  aria-hidden="true"
+                  className="mt-2 size-1.5 rounded-full bg-line-strong shrink-0"
+                />
+                <span>{limitation}</span>
+              </li>
+            ))}
+          </ul>
+        </Card>
+      ) : null}
+
+      {/* Follow-up questions need the original file, which lives only in
+          browser memory — hence the null guard rather than a fetch. */}
+      {file !== null ? (
+        <AskPanel apiBaseUrl={apiBaseUrl} locale={locale} file={file} m={m} />
+      ) : null}
+
+      {/* AI transparency travels with the result, never buried in terms. */}
       <Alert tone="info" title={m.aiNotice} />
 
       <Button variant="secondary" onClick={onReset}>
         {m.startOver}
       </Button>
     </div>
-  );
-}
-
-/**
- * Evidence disclosure: the German passage a claim came from.
- * `lang="de"` + `dir="ltr"` keep German readable and correctly ordered even
- * when the surrounding page is right-to-left (Dari).
- */
-function Evidence({ evidence, label }: { evidence: EvidenceReference[]; label: string }) {
-  if (evidence.length === 0) return null;
-  return (
-    <details className="mt-3 group">
-      <summary className="cursor-pointer text-sm font-medium text-primary hover:text-primary-strong marker:content-['']">
-        {label}
-      </summary>
-      <div className="mt-2 space-y-2">
-        {evidence.map((item) => (
-          <blockquote
-            key={item.text}
-            lang="de"
-            dir="ltr"
-            className="border-s-2 border-line-strong ps-3 font-mono text-sm text-ink-muted leading-relaxed"
-          >
-            {item.text}
-          </blockquote>
-        ))}
-      </div>
-    </details>
   );
 }

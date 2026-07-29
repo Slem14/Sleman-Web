@@ -1,9 +1,16 @@
 import Anthropic from "@anthropic-ai/sdk";
-import { parseDocumentAnalysis, type DocumentAnalysis } from "@wg/validation";
+import {
+  parseDocumentAnalysis,
+  parseQuestionAnswer,
+  type AllowedMimeType,
+  type DocumentAnalysis,
+  type QuestionAnswer,
+} from "@wg/validation";
 import { getModelProfile, type ModelProfile } from "./model-profiles.js";
 import { buildOutputContract } from "./output-contract.js";
 import { PROMPT_VERSION, buildSystemPrompt } from "./prompt.js";
-import type { AnalysisInput, DocumentAnalysisProvider } from "../types.js";
+import { buildQuestionPrompt } from "./question-prompt.js";
+import type { AnalysisInput, DocumentAnalysisProvider, QuestionInput } from "../types.js";
 import { ProviderError } from "../types.js";
 
 export interface AnthropicProviderOptions {
@@ -69,7 +76,11 @@ export class AnthropicProvider implements DocumentAnalysisProvider {
     // bar, it just gives the model one chance to fix a malformed response.
     let lastFailure = "";
     for (let attempt = 0; attempt < 2; attempt += 1) {
-      const raw = await this.callModel(system, documentBlock, lastFailure);
+      const instruction =
+        lastFailure === ""
+          ? "Analyse the attached German letter and return the JSON object."
+          : `${lastFailure}\n\nAnalyse the attached German letter again and return only the JSON object.`;
+      const raw = await this.callModel(system, documentBlock, instruction);
       const analysis = parseDocumentAnalysis(extractJson(raw));
 
       if (analysis !== null) return analysis;
@@ -86,8 +97,35 @@ export class AnthropicProvider implements DocumentAnalysisProvider {
     throw new ProviderError("invalid_output", "analysis did not satisfy the schema");
   }
 
+  async answerQuestion(input: QuestionInput): Promise<QuestionAnswer> {
+    const system = buildQuestionPrompt(input.outputLanguage, input.history);
+    const documentBlock = this.buildDocumentBlock(input);
+
+    let correction = "";
+    for (let attempt = 0; attempt < 2; attempt += 1) {
+      // The question travels as data next to the document, never spliced into
+      // the system prompt — the same separation that protects the letter.
+      const raw = await this.callModel(
+        system,
+        documentBlock,
+        `${correction}The person asks: ${input.question}`,
+      );
+      const answer = parseQuestionAnswer(extractJson(raw));
+      if (answer !== null) return answer;
+
+      correction =
+        "Your previous response did not match the required JSON object. Return only the JSON " +
+        "object described above, with evidence present whenever answeredFromDocument is true. ";
+    }
+
+    throw new ProviderError("invalid_output", "answer did not satisfy the schema");
+  }
+
   /** Wraps the document bytes in the content block its type requires. */
-  private buildDocumentBlock(input: AnalysisInput): Anthropic.ContentBlockParam {
+  private buildDocumentBlock(input: {
+    fileBytes: Buffer;
+    mimeType: AllowedMimeType;
+  }): Anthropic.ContentBlockParam {
     const data = input.fileBytes.toString("base64");
 
     if (input.mimeType === "application/pdf") {
@@ -106,13 +144,8 @@ export class AnthropicProvider implements DocumentAnalysisProvider {
   private async callModel(
     system: string,
     documentBlock: Anthropic.ContentBlockParam,
-    correction: string,
+    instruction: string,
   ): Promise<string> {
-    const instruction =
-      correction === ""
-        ? "Analyse the attached German letter and return the JSON object."
-        : `${correction}\n\nAnalyse the attached German letter again and return only the JSON object.`;
-
     try {
       const response = await this.client.messages.create(
         {
