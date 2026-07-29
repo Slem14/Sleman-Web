@@ -5,6 +5,6 @@ export default [
   ...base,
   ...next,
   {
-    ignores: ["next-env.d.ts", ".next/**", "playwright-report/**", "test-results/**"],
+    ignores: ["next-env.d.ts"],
   },
 ];

@@ -7,7 +7,17 @@ import prettier from "eslint-config-prettier";
  */
 export default tseslint.config(
   {
-    ignores: ["**/node_modules/**", "**/.next/**", "**/dist/**", "**/.turbo/**", "**/coverage/**"],
+    ignores: [
+      "**/node_modules/**",
+      "**/.next/**",
+      "**/.next-build/**", // production build output (see apps/web/next.config.mjs)
+      "**/out/**",
+      "**/dist/**",
+      "**/.turbo/**",
+      "**/coverage/**",
+      "**/playwright-report/**",
+      "**/test-results/**",
+    ],
   },
   ...tseslint.configs.recommendedTypeChecked,
   {
