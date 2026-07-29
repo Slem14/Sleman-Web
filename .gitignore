@@ -24,3 +24,6 @@ Thumbs.db
 
 # Misc
 *.tsbuildinfo
+
+# Local tool settings
+.claude/settings.local.json
