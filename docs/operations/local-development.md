@@ -27,6 +27,27 @@ That's everything. No database, no cloud account, no AI key (by design until Sta
 
 Scoped runs: `pnpm --filter @wg/api dev`, `pnpm --filter @wg/web build`, etc.
 
+## Trying the full flow locally
+
+1. `pnpm dev` (starts web on :3000 and the API on :3001)
+2. Open http://localhost:3000 → choose a language → "Understand my letter"
+3. Upload any PDF/JPG/PNG/WebP. The **stub provider** returns a fixed, fictional
+   Jobcenter analysis — no AI provider is involved, nothing costs money, and the
+   result is identical every time.
+
+The web app finds the API automatically in development. Deployed builds require
+`NEXT_PUBLIC_API_BASE_URL`; when it is unset, the upload page says the service is not
+switched on rather than showing a control that cannot work.
+
+## End-to-end tests
+
+```bash
+pnpm --filter @wg/web test:e2e
+```
+
+Playwright starts both servers itself. Free ports 3000/3001 first if you already have
+`pnpm dev` running.
+
 ## Verifying the API shell
 
 ```bash

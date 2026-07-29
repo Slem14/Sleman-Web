@@ -2,7 +2,9 @@
 
 A privacy-first web application that helps people who don't read German understand German administrative letters — structured explanations (sender, deadlines, required actions, evidence) in their language, with an optional German reply draft. First languages: **English** and **Dari (دری)**. No accounts, no stored documents.
 
-> **Project status: Stage 2 complete (design system, English/Dari i18n with RTL, static journey) — awaiting go for Stage 3 (upload pipeline with stub analysis).** See the staged plan in [docs/product/master-spec.md §21](docs/product/master-spec.md).
+> **Project status: Stage 3 complete (upload pipeline, validation, stub analysis) — awaiting go for Stage 4 (real AI provider integration and evaluation harness).** The full letter → explanation flow works end to end locally with zero AI cost. See the staged plan in [docs/product/master-spec.md §21](docs/product/master-spec.md).
+
+**Live preview:** [slemanparwiz.com](https://slemanparwiz.com) (static site; the analysis API is not deployed yet, so the upload page states that honestly).
 
 ## Documentation map
 

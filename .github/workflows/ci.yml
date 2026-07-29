@@ -42,6 +42,39 @@ jobs:
       - name: Build
         run: pnpm build
 
+  e2e:
+    name: End-to-end and accessibility
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install (frozen lockfile)
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright browsers
+        run: pnpm --filter @wg/web exec playwright install --with-deps chromium
+
+      # Drives the real API with the stub analysis provider: no AI provider,
+      # no credentials, no cost. Includes axe WCAG 2.2 AA scans.
+      - name: Run E2E tests
+        run: pnpm --filter @wg/web test:e2e
+
+      - name: Upload report on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: apps/web/playwright-report
+          retention-days: 7
+
   # Stage 6 extends this pipeline with: secret scanning, dependency audit,
-  # SAST, container build + scan, accessibility smoke tests, E2E (Playwright).
+  # SAST, container build + scan.
   # Stage 7 adds staging deploy + production approval gates.
