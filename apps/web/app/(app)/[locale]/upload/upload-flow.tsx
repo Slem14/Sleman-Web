@@ -11,6 +11,31 @@ import { Alert, Button, Card } from "@wg/ui";
 import { useRef, useState } from "react";
 import { AnalysisResult } from "./analysis-result";
 
+/** Inline so the buttons carry meaning at a glance, not just text. */
+function FileIcon() {
+  return (
+    <svg viewBox="0 0 20 20" aria-hidden="true" fill="currentColor" className="size-5 shrink-0">
+      <path
+        fillRule="evenodd"
+        d="M4 3.5A1.5 1.5 0 0 1 5.5 2h5.086a1.5 1.5 0 0 1 1.06.44l3.915 3.914A1.5 1.5 0 0 1 16 7.414V16.5a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 4 16.5v-13ZM11 3.5V6a1 1 0 0 0 1 1h2.5L11 3.5Z"
+        clipRule="evenodd"
+      />
+    </svg>
+  );
+}
+
+function CameraIcon() {
+  return (
+    <svg viewBox="0 0 20 20" aria-hidden="true" fill="currentColor" className="size-5 shrink-0">
+      <path
+        fillRule="evenodd"
+        d="M7.5 3a1 1 0 0 0-.83.44L5.87 4.7A1 1 0 0 1 5.04 5.1H4a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2h-1.04a1 1 0 0 1-.83-.44l-.8-1.2A1 1 0 0 0 12.5 3h-5ZM10 13.5a3 3 0 1 1 0-6 3 3 0 0 1 0 6Z"
+        clipRule="evenodd"
+      />
+    </svg>
+  );
+}
+
 type UploadMessages = Messages["upload"];
 type ErrorKey = keyof UploadMessages["errors"];
 
@@ -34,6 +59,7 @@ export function UploadFlow({
   const [errorKey, setErrorKey] = useState<ErrorKey | null>(null);
   const [analysis, setAnalysis] = useState<DocumentAnalysis | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
 
   /**
    * Return to a clean slate — this is the user-facing "delete" action.
@@ -49,6 +75,7 @@ export function UploadFlow({
     setErrorKey(null);
     setAnalysis(null);
     if (fileInputRef.current) fileInputRef.current.value = "";
+    if (cameraInputRef.current) cameraInputRef.current.value = "";
   };
 
   const failWith = (key: ErrorKey) => {
@@ -164,24 +191,58 @@ export function UploadFlow({
       ) : null}
 
       <Card>
-        <label htmlFor="letter-file" className="block font-semibold text-ink">
-          {m.chooseFile}
-        </label>
+        <p className="block font-semibold text-ink">{m.pickTitle}</p>
         <p className="mt-1 text-sm text-ink-muted">{m.fileHint}</p>
 
+        {/*
+          Two separate inputs, because one cannot do both jobs on a phone.
+          `capture` forces the camera to open immediately and removes any way
+          to reach the gallery or a saved PDF — which stranded anyone whose
+          letter was already a file. The plain input opens the OS picker
+          (gallery, Files, Drive); the capture input is the shortcut for
+          photographing a letter that is physically in front of you.
+        */}
         <input
           ref={fileInputRef}
           id="letter-file"
           name="file"
           type="file"
           accept="application/pdf,image/jpeg,image/png,image/webp"
-          // `capture` asks mobile browsers to offer the rear camera directly;
-          // desktop browsers ignore it and show the normal file picker.
+          onChange={onFileChosen}
+          disabled={busy}
+          className="sr-only"
+        />
+        <input
+          ref={cameraInputRef}
+          id="letter-camera"
+          type="file"
+          accept="image/*"
           capture="environment"
           onChange={onFileChosen}
           disabled={busy}
-          className="mt-4 block w-full text-sm text-ink file:me-4 file:rounded-md file:border-0 file:bg-primary-soft file:px-4 file:py-2.5 file:font-semibold file:text-primary-soft-ink hover:file:brightness-95 disabled:opacity-50"
+          className="sr-only"
         />
+
+        <div className="mt-5 grid gap-3 sm:grid-cols-2">
+          <Button
+            variant="secondary"
+            size="lg"
+            disabled={busy}
+            onClick={() => fileInputRef.current?.click()}
+          >
+            <FileIcon />
+            {m.chooseFile}
+          </Button>
+          <Button
+            variant="secondary"
+            size="lg"
+            disabled={busy}
+            onClick={() => cameraInputRef.current?.click()}
+          >
+            <CameraIcon />
+            {m.takePhoto}
+          </Button>
+        </div>
 
         <p className="mt-4 text-sm text-ink-muted leading-relaxed">{m.photoTips}</p>
 

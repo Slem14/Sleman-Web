@@ -13,7 +13,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
     <div className="space-y-14">
       {/* Hero */}
       <section className="pt-6 grid gap-12 lg:grid-cols-2 lg:items-center">
-        <div>
+        <div className="rise rise-1">
           <h1 className="text-4xl sm:text-5xl font-bold text-ink leading-[1.08] text-balance">
             {m.home.heroTitle}
           </h1>
@@ -30,7 +30,9 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
           </div>
         </div>
 
-        <HeroMock m={m.home.mock} />
+        <div className="rise rise-3">
+          <HeroMock m={m.home.mock} />
+        </div>
       </section>
 
       {/* How it works */}

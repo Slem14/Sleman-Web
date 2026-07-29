@@ -34,7 +34,10 @@ export function LanguageCard({
       {...rest}
       className={
         "group bg-surface border border-line rounded-xl p-7 flex items-center justify-between gap-4 " +
-        "shadow-card transition-all hover:border-primary hover:shadow-glow hover:-translate-y-0.5 " +
+        // Slightly slower and softer than a default hover: the card should
+        // feel like it lifts, not like it snaps.
+        "shadow-card transition-all duration-300 ease-out " +
+        "hover:border-primary hover:shadow-glow hover:-translate-y-1 active:translate-y-0 " +
         "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus " +
         "min-h-[6rem] " +
         (className ?? "")

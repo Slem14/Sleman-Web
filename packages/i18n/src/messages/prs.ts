@@ -83,6 +83,7 @@ export const prs: Messages = {
   upload: {
     title: "نامهٔ خود را بفرستید",
     lead: "از تمام صفحه عکس بگیرید یا یک فایل PDF انتخاب کنید. نامهٔ شما تحلیل و سپس حذف می‌شود — هیچ چیزی ذخیره نمی‌شود.",
+    pickTitle: "نامهٔ خود را اضافه کنید",
     chooseFile: "انتخاب فایل",
     takePhoto: "گرفتن عکس",
     fileHint: "PDF، JPG، PNG یا WebP · حداکثر ۱۵ میگابایت",

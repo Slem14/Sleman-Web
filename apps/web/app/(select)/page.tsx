@@ -12,15 +12,17 @@ export default function LanguageSelectPage() {
   return (
     <div className="min-h-dvh flex flex-col p-6">
       <main className="w-full max-w-5xl mx-auto flex-1 flex flex-col justify-center py-12">
-        <LiveGreeting />
+        <div className="rise rise-1">
+          <LiveGreeting />
+        </div>
 
-        <div className="mt-12">
+        <div className="mt-12 rise rise-2">
           <LanguagePicker />
         </div>
 
         {/* Coming soon — visible, honest, not clickable. */}
         <ul
-          className="mt-8 grid grid-cols-2 sm:grid-cols-4 gap-3"
+          className="mt-8 grid grid-cols-2 sm:grid-cols-4 gap-3 rise rise-3"
           aria-label="Languages coming soon"
         >
           {UPCOMING_LANGUAGES.map((lang) => (

@@ -5,6 +5,7 @@ import Fastify, { type FastifyInstance } from "fastify";
 import { randomUUID } from "node:crypto";
 import type { ApiConfig } from "./config.js";
 import { AnthropicProvider } from "./providers/anthropic/adapter.js";
+import { PROMPT_VERSION } from "./providers/anthropic/prompt.js";
 import { GeminiProvider } from "./providers/gemini/adapter.js";
 import { StubProvider } from "./providers/stub.js";
 import type { DocumentAnalysisProvider } from "./providers/types.js";
@@ -131,6 +132,22 @@ export async function buildServer(
 
   app.get("/health", () => {
     return { status: "ok" };
+  });
+
+  /**
+   * What is actually deployed.
+   *
+   * Added after a deploy silently kept serving old code: `/health` answered
+   * "ok" while a newly added route 404'd, and there was no way to tell from
+   * outside. Exposes only build metadata — never configuration or secrets.
+   */
+  app.get("/version", () => {
+    return {
+      commit: process.env.RENDER_GIT_COMMIT ?? "unknown",
+      routes: ["/v1/analyses", "/v1/questions"],
+      provider: config.provider,
+      promptVersion: PROMPT_VERSION,
+    };
   });
 
   app.get("/ready", () => {

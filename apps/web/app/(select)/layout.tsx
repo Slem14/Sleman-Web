@@ -40,8 +40,13 @@ export default function SelectLayout({ children }: { children: ReactNode }) {
       <body className="min-h-dvh">
         {/* Apply persisted theme before anything paints (no flash). */}
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
-        <div aria-hidden="true" className="aurora" />
-        <div aria-hidden="true" className="gridlines" />
+        {/* Three drifting glow fields. Spans rather than pseudo-elements so
+            each can carry its own cycle without fighting for ::before. */}
+        <div aria-hidden="true" className="aurora">
+          <span />
+          <span />
+          <span />
+        </div>
         {children}
       </body>
     </html>

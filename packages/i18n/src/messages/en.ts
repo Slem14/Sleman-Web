@@ -75,6 +75,7 @@ export const en = {
   upload: {
     title: "Upload your letter",
     lead: "Take a photo of the whole page, or choose a PDF. Your letter is analyzed and then deleted — nothing is stored.",
+    pickTitle: "Add your letter",
     chooseFile: "Choose a file",
     takePhoto: "Take a photo",
     fileHint: "PDF, JPG, PNG or WebP · up to 15 MB",

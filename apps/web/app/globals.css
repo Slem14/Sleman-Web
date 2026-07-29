@@ -99,10 +99,14 @@
 
 /* ------------------------------------------------ decorative atmosphere -- */
 
-/* Living aurora backdrop: two glow fields drifting on slow, offset orbits.
-   Decorative only — content contrast is measured against --wg-canvas.
-   Under prefers-reduced-motion the global rule freezes both (still pretty,
-   just still). */
+/* Living aurora backdrop.
+ *
+ * Three glow fields on long, prime-ish, offset cycles so the composition never
+ * visibly repeats — the eye should register "alive" without ever catching a
+ * loop. Purely decorative: every contrast ratio in the design is measured
+ * against the flat --wg-canvas underneath, so the aurora can never make text
+ * fail. Frozen entirely by the global prefers-reduced-motion rule.
+ */
 .aurora {
   position: fixed;
   inset: 0;
@@ -111,62 +115,117 @@
   pointer-events: none;
   background: var(--wg-canvas);
 }
-.aurora::before,
-.aurora::after {
-  content: "";
+.aurora span {
   position: absolute;
-  width: 55rem;
-  height: 55rem;
   border-radius: 50%;
+  /* Large blur radii are expensive to repaint; promoting to its own layer
+     keeps the animation on the compositor and off the main thread. */
+  will-change: transform, opacity;
+  transform: translateZ(0);
+}
+.aurora span:nth-child(1) {
+  width: 62vw;
+  height: 62vw;
+  min-width: 30rem;
+  min-height: 30rem;
+  top: -24vw;
+  inset-inline-start: -14vw;
+  background: radial-gradient(circle, var(--wg-glow-a), transparent 64%);
+  filter: blur(60px);
+  animation: wg-drift-a 41s ease-in-out infinite alternate;
+}
+.aurora span:nth-child(2) {
+  width: 52vw;
+  height: 52vw;
+  min-width: 26rem;
+  min-height: 26rem;
+  bottom: -22vw;
+  inset-inline-end: -12vw;
+  background: radial-gradient(circle, var(--wg-glow-b), transparent 64%);
   filter: blur(70px);
-  will-change: transform;
+  animation: wg-drift-b 53s ease-in-out infinite alternate;
 }
-.aurora::before {
-  background: radial-gradient(circle, var(--wg-glow-a), transparent 62%);
-  top: -22rem;
-  inset-inline-start: -8rem;
-  animation: wg-drift-a 26s ease-in-out infinite alternate;
+.aurora span:nth-child(3) {
+  width: 40vw;
+  height: 40vw;
+  min-width: 20rem;
+  min-height: 20rem;
+  top: 30%;
+  inset-inline-start: 45%;
+  background: radial-gradient(circle, var(--wg-glow-c), transparent 66%);
+  filter: blur(80px);
+  animation: wg-drift-c 67s ease-in-out infinite alternate;
 }
-.aurora::after {
-  background: radial-gradient(circle, var(--wg-glow-b), transparent 62%);
-  bottom: -24rem;
-  inset-inline-end: -10rem;
-  animation: wg-drift-b 32s ease-in-out infinite alternate;
-}
+
 @keyframes wg-drift-a {
   from {
-    transform: translate(0, 0) scale(1);
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 0.85;
   }
   50% {
-    transform: translate(14rem, 7rem) scale(1.15);
+    transform: translate3d(16vw, 9vh, 0) scale(1.18);
+    opacity: 1;
   }
   to {
-    transform: translate(30rem, 2rem) scale(0.95);
+    transform: translate3d(34vw, 2vh, 0) scale(0.94);
+    opacity: 0.8;
   }
 }
 @keyframes wg-drift-b {
   from {
-    transform: translate(0, 0) scale(1.05);
+    transform: translate3d(0, 0, 0) scale(1.06);
+    opacity: 0.9;
   }
   50% {
-    transform: translate(-16rem, -9rem) scale(0.9);
+    transform: translate3d(-18vw, -11vh, 0) scale(0.88);
+    opacity: 1;
   }
   to {
-    transform: translate(-28rem, -3rem) scale(1.2);
+    transform: translate3d(-31vw, -3vh, 0) scale(1.22);
+    opacity: 0.85;
+  }
+}
+@keyframes wg-drift-c {
+  from {
+    transform: translate3d(0, 0, 0) scale(0.9);
+    opacity: 0.5;
+  }
+  50% {
+    transform: translate3d(-22vw, 14vh, 0) scale(1.25);
+    opacity: 0.9;
+  }
+  to {
+    transform: translate3d(12vw, -10vh, 0) scale(1);
+    opacity: 0.55;
   }
 }
 
-/* Fine grid texture for the hero/select backdrop — barely-there engineering paper. */
-.gridlines {
-  background-image:
-    linear-gradient(var(--wg-line) 1px, transparent 1px),
-    linear-gradient(90deg, var(--wg-line) 1px, transparent 1px);
-  background-size: 44px 44px;
-  mask-image: radial-gradient(60rem 32rem at 50% 0%, rgb(0 0 0 / 0.5), transparent 70%);
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
+/* Content entrance: a short rise-and-fade, staggered by depth on the page.
+   Deliberately quick (450ms) — this is polish, not a loading screen. */
+@keyframes wg-rise {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.rise {
+  animation: wg-rise 450ms cubic-bezier(0.22, 0.68, 0.24, 1) both;
+}
+.rise-1 {
+  animation-delay: 60ms;
+}
+.rise-2 {
+  animation-delay: 130ms;
+}
+.rise-3 {
+  animation-delay: 210ms;
+}
+.rise-4 {
+  animation-delay: 300ms;
 }
 
 /* Gentle float for the hero mock. Disabled under reduced motion (global rule). */

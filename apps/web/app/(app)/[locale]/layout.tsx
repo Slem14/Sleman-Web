@@ -73,7 +73,11 @@ export default async function LocaleLayout({
       <body className="min-h-dvh flex flex-col">
         {/* Apply persisted theme before anything paints (no flash). */}
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
-        <div aria-hidden="true" className="aurora" />
+        <div aria-hidden="true" className="aurora">
+          <span />
+          <span />
+          <span />
+        </div>
 
         <a href="#main" className="skip-link">
           {m.common.skipToContent}
