@@ -5,6 +5,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
 import { fontVariables } from "../../fonts";
+import { THEME_INIT_SCRIPT, ThemeToggle } from "../../theme";
 import "../../globals.css";
 
 export const dynamicParams = false;
@@ -31,7 +32,7 @@ export async function generateMetadata({
 export const viewport: Viewport = {
   themeColor: [
     { media: "(prefers-color-scheme: light)", color: "#faf8f4" },
-    { media: "(prefers-color-scheme: dark)", color: "#0e1413" },
+    { media: "(prefers-color-scheme: dark)", color: "#0d1312" },
   ],
 };
 
@@ -53,20 +54,24 @@ export default async function LocaleLayout({
   return (
     <html lang={locale} dir={dir(locale)} suppressHydrationWarning className={fontVariables}>
       <body className="min-h-dvh flex flex-col">
+        {/* Apply persisted theme before anything paints (no flash). */}
+        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
+        <div aria-hidden="true" className="aurora" />
+
         <a href="#main" className="skip-link">
           {m.common.skipToContent}
         </a>
 
-        <header className="border-b border-line bg-surface">
-          <div className="mx-auto max-w-3xl px-6 py-4 flex items-center justify-between gap-4">
+        <header className="sticky top-0 z-40 header-blur border-b border-line">
+          <div className="mx-auto max-w-4xl px-6 py-3.5 flex items-center justify-between gap-4">
             <Link
               href={`/${locale}`}
               className="font-mono text-sm font-bold uppercase tracking-[0.15em] text-ink hover:text-primary transition-colors"
             >
-              Welcome Germany
+              Welcome<span className="text-primary"> Germany</span>
             </Link>
             <div className="flex items-center gap-3">
-              <Badge tone="neutral" aria-hidden="true" className="hidden sm:inline-block">
+              <Badge tone="neutral" className="hidden sm:inline-block">
                 Beta
               </Badge>
               <Link
@@ -75,16 +80,20 @@ export default async function LocaleLayout({
               >
                 {m.common.languageSwitch}
               </Link>
+              <ThemeToggle
+                labelToDark={m.common.themeToDark}
+                labelToLight={m.common.themeToLight}
+              />
             </div>
           </div>
         </header>
 
-        <main id="main" className="flex-1 w-full mx-auto max-w-3xl px-6 py-10">
+        <main id="main" className="flex-1 w-full mx-auto max-w-4xl px-6 py-10">
           {children}
         </main>
 
         <footer className="border-t border-line bg-surface mt-16">
-          <div className="mx-auto max-w-3xl px-6 py-8">
+          <div className="mx-auto max-w-4xl px-6 py-8">
             <nav aria-label={m.footer.privacy} className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
               <Link href={`/${locale}/privacy`} className="text-ink-muted hover:text-primary">
                 {m.footer.privacy}

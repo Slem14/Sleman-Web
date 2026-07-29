@@ -47,3 +47,25 @@ export function getMessages(locale: Locale): Messages {
 
 /** localStorage key for the persisted language choice (client-only, C2 data). */
 export const LANGUAGE_STORAGE_KEY = "wg.language";
+
+/**
+ * Languages planned but not yet built (master-spec §1: added only after
+ * native review). Shown as visibly disabled cards on language selection so
+ * speakers know they are seen — order roughly by community size in Germany.
+ */
+export interface UpcomingLanguage {
+  native: string;
+  english: string;
+  dir: "ltr" | "rtl";
+}
+
+export const UPCOMING_LANGUAGES: ReadonlyArray<UpcomingLanguage> = [
+  { native: "العربية", english: "Arabic", dir: "rtl" },
+  { native: "Türkçe", english: "Turkish", dir: "ltr" },
+  { native: "Українська", english: "Ukrainian", dir: "ltr" },
+  { native: "Русский", english: "Russian", dir: "ltr" },
+  { native: "پښتو", english: "Pashto", dir: "rtl" },
+  { native: "فارسی", english: "Farsi", dir: "rtl" },
+  { native: "Kurdî", english: "Kurdish", dir: "ltr" },
+  { native: "ትግርኛ", english: "Tigrinya", dir: "ltr" },
+];

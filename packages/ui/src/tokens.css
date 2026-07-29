@@ -1,10 +1,12 @@
 /**
  * Welcome Germany — design tokens.
- * Character: "quiet precision" — warm paper surfaces, deep teal primary,
- * crisp edges, restrained depth. Dark theme follows the system automatically.
+ * Character: precision-tech on warm paper; deep teal identity, luminous
+ * accents, crisp edges. Theme resolution order:
+ *   1. Explicit user choice via html[data-theme] (persisted in localStorage)
+ *   2. System preference (prefers-color-scheme)
  *
- * Contrast: all text/background pairs below meet WCAG 2.2 AA (≥4.5:1 normal
- * text, ≥3:1 large text). Any new pair must be checked before use.
+ * Contrast: all text/background pairs meet WCAG 2.2 AA. Any new pair must be
+ * checked before use (axe e2e gate enforces this on every page).
  */
 
 :root {
@@ -28,6 +30,11 @@
   --wg-primary-contrast: #ffffff;
   --wg-primary-soft: #ddeeea;
   --wg-primary-soft-ink: #084f47;
+
+  /* Luminous accents (decorative only — never text) */
+  --wg-glow-a: rgb(11 107 96 / 0.16);
+  --wg-glow-b: rgb(212 160 23 / 0.1);
+  --wg-grad-btn: linear-gradient(135deg, #0d7a6d 0%, #0b6b60 55%, #095c52 100%);
 
   /* Semantic tones (background / ink / border) — never color-only signals */
   --wg-info-bg: #e5eef4;
@@ -53,21 +60,74 @@
   --wg-radius-sm: 6px;
   --wg-radius-md: 10px;
   --wg-radius-lg: 14px;
+  --wg-radius-xl: 20px;
 
-  /* Elevation — barely-there in light theme */
+  /* Elevation */
   --wg-shadow-1: 0 1px 2px rgb(28 35 33 / 0.05), 0 3px 10px rgb(28 35 33 / 0.05);
   --wg-shadow-2: 0 2px 4px rgb(28 35 33 / 0.06), 0 10px 28px rgb(28 35 33 / 0.09);
+  --wg-shadow-glow: 0 0 0 1px rgb(11 107 96 / 0.25), 0 8px 30px rgb(11 107 96 / 0.18);
 
   color-scheme: light;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --wg-canvas: #0e1413;
-    --wg-surface: #151c1b;
-    --wg-raised: #1b2422;
+/* ---------------------------------------------------------------- dark --- */
+/* The dark palette appears twice on purpose: once for explicit choice,
+   once for system preference without an explicit light choice. Keep in sync. */
 
-    --wg-line: #263130;
+:root[data-theme="dark"] {
+  --wg-canvas: #0d1312;
+  --wg-surface: #141b1a;
+  --wg-raised: #1a2321;
+
+  --wg-line: #253130;
+  --wg-line-strong: #3b4845;
+
+  --wg-ink: #e9edeb;
+  --wg-ink-muted: #a3b1ac;
+  --wg-ink-faint: #7e8c88;
+
+  --wg-primary: #3cc5b3;
+  --wg-primary-strong: #5cd6c6;
+  --wg-primary-contrast: #062720;
+  --wg-primary-soft: #123029;
+  --wg-primary-soft-ink: #7fdccd;
+
+  --wg-glow-a: rgb(60 197 179 / 0.13);
+  --wg-glow-b: rgb(212 160 23 / 0.07);
+  --wg-grad-btn: linear-gradient(135deg, #46d2bf 0%, #3cc5b3 55%, #2eb3a2 100%);
+
+  --wg-info-bg: #122833;
+  --wg-info-ink: #9ccdea;
+  --wg-info-line: #234a5e;
+
+  --wg-success-bg: #12291a;
+  --wg-success-ink: #9bd6ae;
+  --wg-success-line: #26543a;
+
+  --wg-warn-bg: #2d2410;
+  --wg-warn-ink: #e5c778;
+  --wg-warn-line: #5b4a1e;
+
+  --wg-danger-bg: #331a17;
+  --wg-danger-ink: #eba79e;
+  --wg-danger-line: #663029;
+
+  --wg-focus: #4fd1c0;
+
+  --wg-shadow-1: 0 0 0 1px rgb(255 255 255 / 0.03);
+  --wg-shadow-2: 0 0 0 1px rgb(255 255 255 / 0.04), 0 12px 32px rgb(0 0 0 / 0.4);
+  --wg-shadow-glow: 0 0 0 1px rgb(60 197 179 / 0.3), 0 8px 30px rgb(60 197 179 / 0.12);
+
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --wg-canvas: #0d1312;
+    --wg-surface: #141b1a;
+    --wg-raised: #1a2321;
+
+    --wg-line: #253130;
     --wg-line-strong: #3b4845;
 
     --wg-ink: #e9edeb;
@@ -79,6 +139,10 @@
     --wg-primary-contrast: #062720;
     --wg-primary-soft: #123029;
     --wg-primary-soft-ink: #7fdccd;
+
+    --wg-glow-a: rgb(60 197 179 / 0.13);
+    --wg-glow-b: rgb(212 160 23 / 0.07);
+    --wg-grad-btn: linear-gradient(135deg, #46d2bf 0%, #3cc5b3 55%, #2eb3a2 100%);
 
     --wg-info-bg: #122833;
     --wg-info-ink: #9ccdea;
@@ -98,8 +162,9 @@
 
     --wg-focus: #4fd1c0;
 
-    --wg-shadow-1: 0 0 0 1px rgb(255 255 255 / 0.02);
-    --wg-shadow-2: 0 0 0 1px rgb(255 255 255 / 0.03);
+    --wg-shadow-1: 0 0 0 1px rgb(255 255 255 / 0.03);
+    --wg-shadow-2: 0 0 0 1px rgb(255 255 255 / 0.04), 0 12px 32px rgb(0 0 0 / 0.4);
+    --wg-shadow-glow: 0 0 0 1px rgb(60 197 179 / 0.3), 0 8px 30px rgb(60 197 179 / 0.12);
 
     color-scheme: dark;
   }

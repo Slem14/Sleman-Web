@@ -12,6 +12,8 @@ export const en = {
     betaNotice: "Early preview — not yet open to the public.",
     languageSwitch: "Change language",
     skipToContent: "Skip to main content",
+    themeToDark: "Switch to dark mode",
+    themeToLight: "Switch to light mode",
   },
   languageSelect: {
     title: "Choose your language",
@@ -59,6 +61,16 @@ export const en = {
     seriousTitle: "Some letters need more than an app",
     seriousText:
       "For letters about courts, asylum decisions, deportation, or losing your home, we deliberately stay cautious and point you to qualified human help.",
+    mock: {
+      letterLabel: "Your letter",
+      resultLabel: "Your explanation",
+      deadline: "Deadline found",
+      deadlineValue: "15 August 2026",
+      action: "What it asks",
+      actionValue: "Hand in two documents",
+      sender: "From",
+      senderValue: "Jobcenter Berlin Mitte",
+    },
   },
   privacyPage: {
     title: "Privacy Notice",

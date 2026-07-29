@@ -6,6 +6,7 @@ import {
   LOCALES,
   NATIVE_NAMES,
   dir,
+  getMessages,
   isLocale,
   type Locale,
 } from "@wg/i18n";
@@ -13,9 +14,9 @@ import { LanguageCard } from "@wg/ui";
 import { useEffect, useState } from "react";
 
 /**
- * Client island: renders the language cards, persists the choice in
- * localStorage (browser-only, never sent to a server) and, on return visits,
- * points out the previous choice.
+ * Client island: language cards, each entirely in its own language (name,
+ * tagline, direction). The choice persists in localStorage only; on return
+ * visits the previous choice carries a small chip in that language.
  */
 export function LanguagePicker() {
   const [saved, setSaved] = useState<Locale | null>(null);
@@ -39,21 +40,22 @@ export function LanguagePicker() {
 
   return (
     <nav aria-label="Language selection" className="grid gap-4">
-      {LOCALES.map((locale) => (
-        <LanguageCard
-          key={locale}
-          href={`/${locale}`}
-          nativeName={NATIVE_NAMES[locale]}
-          englishName={
-            saved === locale
-              ? `${ENGLISH_NAMES[locale]} — previously chosen`
-              : ENGLISH_NAMES[locale]
-          }
-          langTag={locale}
-          nativeDir={dir(locale)}
-          onClick={() => remember(locale)}
-        />
-      ))}
+      {LOCALES.map((locale) => {
+        const m = getMessages(locale);
+        return (
+          <LanguageCard
+            key={locale}
+            href={`/${locale}`}
+            nativeName={NATIVE_NAMES[locale]}
+            englishName={ENGLISH_NAMES[locale]}
+            langTag={locale}
+            nativeDir={dir(locale)}
+            subtitle={m.common.tagline}
+            chip={saved === locale ? m.common.continue : undefined}
+            onClick={() => remember(locale)}
+          />
+        );
+      })}
     </nav>
   );
 }

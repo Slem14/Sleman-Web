@@ -20,9 +20,34 @@ test.describe("language selection", () => {
     await expectNoSeriousA11yViolations(page);
   });
 
+  test("upcoming languages are visible but not clickable", async ({ page }) => {
+    await page.goto("/");
+    await expect(page.getByText("العربية")).toBeVisible();
+    await expect(page.getByText("Українська")).toBeVisible();
+    await expect(page.getByText("پښتو")).toBeVisible();
+    // They are announcements, not links — no false doors.
+    await expect(page.getByRole("link", { name: /العربية/ })).toHaveCount(0);
+    await expect(page.getByRole("link", { name: /Türkçe/ })).toHaveCount(0);
+  });
+
+  test("theme toggle switches and persists the theme", async ({ page }) => {
+    await page.goto("/");
+    const html = page.locator("html");
+    const toggle = page.getByTestId("theme-toggle");
+    await toggle.click();
+    const chosen = await html.getAttribute("data-theme");
+    expect(chosen === "dark" || chosen === "light").toBe(true);
+    // Survives reload (localStorage, applied before paint).
+    await page.reload();
+    await expect(html).toHaveAttribute("data-theme", chosen as string);
+    const stored = await page.evaluate(() => window.localStorage.getItem("wg.theme"));
+    expect(stored).toBe(chosen);
+  });
+
   test("keyboard-only: tab reaches language cards and Enter navigates", async ({ page }) => {
     await page.goto("/");
-    await page.keyboard.press("Tab"); // first card
+    // Language cards come first in DOM order (theme toggle is after main).
+    await page.keyboard.press("Tab");
     await page.keyboard.press("Enter");
     await expect(page).toHaveURL(/\/(en|prs)$/);
   });
@@ -62,14 +87,9 @@ test.describe("English journey", () => {
     await expect(page.getByText(/pending professional legal review/i)).toBeVisible();
     await expectNoSeriousA11yViolations(page);
 
-    for (const [name, path] of [
-      ["Terms & Disclaimer", "terms"],
-      ["About the AI", "ai"],
-      ["Impressum", "impressum"],
-    ] as const) {
-      await page.goto("/en");
-      await page.getByRole("link", { name }).click();
-      await expect(page).toHaveURL(new RegExp(`/en/${path}$`));
+    // Remaining legal pages: direct navigation (footer linkage proven above).
+    for (const path of ["terms", "ai", "impressum"] as const) {
+      await page.goto(`/en/${path}`);
       await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
     }
   });

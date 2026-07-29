@@ -2,6 +2,7 @@ import { getMessages, isLocale } from "@wg/i18n";
 import { Alert, Button, Card, Steps } from "@wg/ui";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { HeroMock } from "./hero-mock";
 
 export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -9,23 +10,29 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   const m = getMessages(locale);
 
   return (
-    <div className="space-y-12">
+    <div className="space-y-14">
       {/* Hero */}
-      <section className="pt-4">
-        <h1 className="text-3xl sm:text-4xl font-bold text-ink leading-tight text-balance">
-          {m.home.heroTitle}
-        </h1>
-        <p className="mt-4 text-lg text-ink-muted leading-relaxed max-w-prose">{m.home.heroLead}</p>
-
-        <div className="mt-8 flex flex-col sm:flex-row gap-3 sm:items-center">
-          {/* Upload arrives in Stage 3 — honest disabled state, no fake door. */}
-          <Button size="lg" disabled aria-describedby="upload-coming-soon">
-            {m.home.uploadCta}
-          </Button>
-          <p id="upload-coming-soon" className="text-sm text-ink-muted max-w-xs">
-            {m.home.uploadComingSoon}
+      <section className="pt-6 grid gap-12 lg:grid-cols-2 lg:items-center">
+        <div>
+          <h1 className="text-4xl sm:text-5xl font-bold text-ink leading-[1.08] text-balance">
+            {m.home.heroTitle}
+          </h1>
+          <p className="mt-5 text-lg text-ink-muted leading-relaxed max-w-prose">
+            {m.home.heroLead}
           </p>
+
+          <div className="mt-9 flex flex-col sm:flex-row gap-3 sm:items-center">
+            {/* Upload arrives in Stage 3 — honest disabled state, no fake door. */}
+            <Button size="lg" disabled aria-describedby="upload-coming-soon">
+              {m.home.uploadCta}
+            </Button>
+            <p id="upload-coming-soon" className="text-sm text-ink-muted max-w-xs">
+              {m.home.uploadComingSoon}
+            </p>
+          </div>
         </div>
+
+        <HeroMock m={m.home.mock} />
       </section>
 
       {/* How it works */}

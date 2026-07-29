@@ -9,7 +9,8 @@ const BASE =
   "disabled:opacity-50 disabled:pointer-events-none select-none";
 
 const VARIANTS: Record<Variant, string> = {
-  primary: "bg-primary text-primary-contrast hover:bg-primary-strong",
+  primary:
+    "btn-gradient bg-primary text-primary-contrast shadow-card hover:brightness-110 active:translate-y-px",
   secondary: "bg-surface text-ink border border-line-strong hover:border-ink-muted hover:bg-raised",
   ghost: "bg-transparent text-primary hover:bg-primary-soft",
 };

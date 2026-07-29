@@ -20,6 +20,8 @@ export const prs: Messages = {
     betaNotice: "نسخهٔ آزمایشی — هنوز برای عموم باز نیست.",
     languageSwitch: "تغییر زبان",
     skipToContent: "رفتن به محتوای اصلی",
+    themeToDark: "تغییر به حالت تاریک",
+    themeToLight: "تغییر به حالت روشن",
   },
   languageSelect: {
     title: "زبان خود را انتخاب کنید",
@@ -67,6 +69,16 @@ export const prs: Messages = {
     seriousTitle: "بعضی نامه‌ها به بیشتر از یک اپ نیاز دارند",
     seriousText:
       "برای نامه‌های مربوط به محکمه، تصمیم‌های پناهندگی، اخراج از کشور یا از دست دادن خانه، ما آگاهانه محتاط می‌مانیم و شما را به کمک انسانی متخصص راهنمایی می‌کنیم.",
+    mock: {
+      letterLabel: "نامهٔ شما",
+      resultLabel: "توضیح شما",
+      deadline: "مهلت پیدا شد",
+      deadlineValue: "۱۵ اگست ۲۰۲۶",
+      action: "چه خواسته شده",
+      actionValue: "تحویل دو سند",
+      sender: "فرستنده",
+      senderValue: "Jobcenter Berlin Mitte",
+    },
   },
   privacyPage: {
     title: "اعلامیهٔ حریم خصوصی",

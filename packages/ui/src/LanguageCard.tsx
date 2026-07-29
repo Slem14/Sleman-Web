@@ -9,6 +9,10 @@ export interface LanguageCardProps extends AnchorHTMLAttributes<HTMLAnchorElemen
   langTag: string;
   /** Direction of the native name. */
   nativeDir: "ltr" | "rtl";
+  /** Short line rendered in the language itself (e.g. its tagline). */
+  subtitle?: string | undefined;
+  /** Small chip shown at the end (e.g. "last used" in that language). */
+  chip?: string | undefined;
 }
 
 /**
@@ -20,6 +24,8 @@ export function LanguageCard({
   englishName,
   langTag,
   nativeDir,
+  subtitle,
+  chip,
   className,
   ...rest
 }: LanguageCardProps) {
@@ -27,22 +33,29 @@ export function LanguageCard({
     <a
       {...rest}
       className={
-        "group bg-surface border border-line rounded-lg p-6 flex items-center justify-between gap-4 " +
-        "shadow-card hover:border-primary hover:shadow-card-lg transition-all " +
+        "group bg-surface border border-line rounded-xl p-7 flex items-center justify-between gap-4 " +
+        "shadow-card transition-all hover:border-primary hover:shadow-glow hover:-translate-y-0.5 " +
         "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus " +
-        "min-h-[5.5rem] " +
+        "min-h-[6rem] " +
         (className ?? "")
       }
     >
-      <span className="min-w-0">
-        <span
-          lang={langTag}
-          dir={nativeDir}
-          className="block text-2xl font-bold text-ink leading-tight"
-        >
-          {nativeName}
+      <span className="min-w-0" lang={langTag} dir={nativeDir}>
+        <span className="flex items-center gap-3">
+          <span className="block text-3xl font-bold text-ink leading-tight">{nativeName}</span>
+          {chip ? (
+            <span className="inline-block rounded-sm bg-primary-soft px-2 py-0.5 text-xs font-semibold text-primary-soft-ink">
+              {chip}
+            </span>
+          ) : null}
         </span>
-        <span className="block mt-1 text-sm text-ink-muted font-mono uppercase tracking-wide">
+        {subtitle ? (
+          <span className="block mt-1.5 text-sm text-ink-muted leading-relaxed">{subtitle}</span>
+        ) : null}
+        <span
+          dir="ltr"
+          className="block mt-2 text-xs text-ink-muted font-mono uppercase tracking-widest"
+        >
           {englishName}
         </span>
       </span>

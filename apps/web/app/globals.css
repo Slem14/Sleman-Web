@@ -37,10 +37,12 @@
   --radius-sm: var(--wg-radius-sm);
   --radius-md: var(--wg-radius-md);
   --radius-lg: var(--wg-radius-lg);
+  --radius-xl: var(--wg-radius-xl);
 
   /* Elevation */
   --shadow-card: var(--wg-shadow-1);
   --shadow-card-lg: var(--wg-shadow-2);
+  --shadow-glow: var(--wg-shadow-glow);
 
   /* Typography. Vazirmatn covers Arabic script; Latin-only fonts fall through. */
   --font-sans: var(--font-inter), var(--font-vazirmatn), ui-sans-serif, system-ui, sans-serif;
@@ -93,4 +95,55 @@
 }
 .skip-link:focus-visible {
   transform: translateY(0);
+}
+
+/* ------------------------------------------------ decorative atmosphere -- */
+
+/* Aurora backdrop: two soft radial glows anchored to the canvas.
+   Decorative only — content contrast is measured against --wg-canvas. */
+.aurora {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(42rem 42rem at 18% -10%, var(--wg-glow-a), transparent 60%),
+    radial-gradient(36rem 36rem at 100% 45%, var(--wg-glow-b), transparent 65%), var(--wg-canvas);
+}
+
+/* Fine grid texture for the hero/select backdrop — barely-there engineering paper. */
+.gridlines {
+  background-image:
+    linear-gradient(var(--wg-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--wg-line) 1px, transparent 1px);
+  background-size: 44px 44px;
+  mask-image: radial-gradient(60rem 32rem at 50% 0%, rgb(0 0 0 / 0.5), transparent 70%);
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* Gentle float for the hero mock. Disabled under reduced motion (global rule). */
+@keyframes wg-float {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-8px);
+  }
+}
+.float-slow {
+  animation: wg-float 5s ease-in-out infinite alternate;
+}
+
+/* Primary button gradient (token-driven, theme-aware). */
+.btn-gradient {
+  background-image: var(--wg-grad-btn);
+}
+
+/* Sticky translucent header */
+.header-blur {
+  background: color-mix(in srgb, var(--wg-surface) 82%, transparent);
+  backdrop-filter: blur(12px);
 }
