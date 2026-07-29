@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(node -v)",
+      "PowerShell(pnpm -v)",
+      "PowerShell(corepack --version)",
+      "PowerShell(npm install -g pnpm@latest-10)",
+      "PowerShell(git init -b main)",
+      "PowerShell(pnpm install 2>&1)",
+      "PowerShell(pnpm lint 2>&1)",
+      "PowerShell(pnpm typecheck 2>&1)",
+      "PowerShell(pnpm build 2>&1)"
+    ]
+  }
+}

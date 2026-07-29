@@ -1,0 +1,26 @@
+# Dependencies
+node_modules/
+
+# Builds
+.next/
+dist/
+out/
+.turbo/
+
+# Environment — never commit real env files
+.env
+.env.*
+!.env.example
+
+# Test artifacts
+coverage/
+playwright-report/
+test-results/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.log
+
+# Misc
+*.tsbuildinfo
