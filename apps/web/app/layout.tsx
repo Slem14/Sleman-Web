@@ -10,7 +10,10 @@ export const metadata: Metadata = {
 // lang/dir become dynamic when i18n lands in Stage 2 (Dari = rtl).
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" dir="ltr">
+    // suppressHydrationWarning: browser extensions (grammar checkers etc.)
+    // inject attributes into <html> before React hydrates; only this element
+    // ignores that noise — real mismatches inside the page still surface.
+    <html lang="en" dir="ltr" suppressHydrationWarning>
       <body>{children}</body>
     </html>
   );
