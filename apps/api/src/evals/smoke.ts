@@ -9,6 +9,7 @@
  */
 import { readFileSync } from "node:fs";
 import { AnthropicProvider } from "../providers/anthropic/adapter.js";
+import { GeminiProvider } from "../providers/gemini/adapter.js";
 import { applyPostChecks } from "../safety/post-checks.js";
 import { applyRiskEscalation } from "../safety/risk-classifier.js";
 import { LETTER_FIXTURES } from "./fixtures/letters.js";
@@ -37,31 +38,43 @@ function loadEnv(): void {
   }
 }
 
+function requireKey(name: string): string {
+  const value = process.env[name];
+  if (value === undefined || value === "") {
+    console.error(`${name} is not set.`);
+    process.exit(1);
+  }
+  return value;
+}
+
 async function main(): Promise<void> {
   loadEnv();
 
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (apiKey === undefined || apiKey === "") {
-    console.error("ANTHROPIC_API_KEY is not set.");
-    process.exit(1);
-  }
+  const providerName = process.env.ANALYSIS_PROVIDER ?? "gemini";
+  const model =
+    process.env.ANALYSIS_MODEL ??
+    (providerName === "gemini" ? "gemini-2.5-flash" : "claude-haiku-4-5");
 
-  const model = process.env.ANALYSIS_MODEL ?? "claude-haiku-4-5";
-  const baseUrl = process.env.ANTHROPIC_BASE_URL;
+  const provider =
+    providerName === "gemini"
+      ? new GeminiProvider({
+          apiKey: requireKey("GEMINI_API_KEY"),
+          model,
+          timeoutMs: 90_000,
+        })
+      : new AnthropicProvider({
+          apiKey: requireKey("ANTHROPIC_API_KEY"),
+          model,
+          baseUrl: process.env.ANTHROPIC_BASE_URL,
+          timeoutMs: 90_000,
+        });
 
+  console.log(`provider: ${providerName}`);
   console.log(`model:    ${model}`);
-  console.log(`endpoint: ${baseUrl ?? "https://api.anthropic.com (default)"}`);
 
   const fixture = LETTER_FIXTURES[0]!;
   const pdf = renderTextToPdf(fixture.german);
   console.log(`fixture:  ${fixture.id} (${pdf.length} byte PDF)\n`);
-
-  const provider = new AnthropicProvider({
-    apiKey,
-    model,
-    baseUrl,
-    timeoutMs: 90_000,
-  });
 
   const started = Date.now();
   const raw = await provider.analyze({
