@@ -33,7 +33,9 @@ test.describe("upload flow — English", () => {
 
     // Result appears with the normalized deadline from the stub analysis.
     await expect(page.getByRole("heading", { name: "What this letter says" })).toBeVisible({
-      timeout: 15_000,
+      // Generous: desktop and mobile projects run in parallel against one dev
+      // server, so first-paint of a route can queue behind a compile.
+      timeout: 30_000,
     });
     await expect(page.getByText("2026-08-15")).toBeVisible();
     await expect(page.getByText("Jobcenter Berlin Mitte").first()).toBeVisible();
@@ -59,7 +61,9 @@ test.describe("upload flow — English", () => {
     });
     await page.getByRole("button", { name: "Explain this letter" }).click();
     await expect(page.getByRole("heading", { name: "What this letter says" })).toBeVisible({
-      timeout: 15_000,
+      // Generous: desktop and mobile projects run in parallel against one dev
+      // server, so first-paint of a route can queue behind a compile.
+      timeout: 30_000,
     });
 
     await page.getByRole("button", { name: "Delete and start over" }).click();
@@ -97,7 +101,9 @@ test.describe("upload flow — English", () => {
     });
     await page.getByRole("button", { name: "Explain this letter" }).click();
     await expect(page.locator("main").getByRole("alert")).toContainText("could not be read", {
-      timeout: 15_000,
+      // Generous: desktop and mobile projects run in parallel against one dev
+      // server, so first-paint of a route can queue behind a compile.
+      timeout: 30_000,
     });
   });
 });
@@ -115,14 +121,25 @@ test.describe("upload flow — Dari (RTL)", () => {
     await page.getByRole("button", { name: "این نامه را برایم توضیح بده" }).click();
 
     await expect(page.getByRole("heading", { name: "در این نامه چه نوشته شده" })).toBeVisible({
-      timeout: 15_000,
+      // Generous: desktop and mobile projects run in parallel against one dev
+      // server, so first-paint of a route can queue behind a compile.
+      timeout: 30_000,
     });
 
-    // The German evidence block must remain left-to-right inside RTL layout.
-    await page.getByText("متن اصلی آلمانی").first().click();
-    const quote = page.locator("blockquote[lang='de']").first();
-    await expect(quote).toHaveAttribute("dir", "ltr");
-    await expect(quote).toContainText("August 2026");
+    // The German evidence blocks must remain left-to-right inside RTL layout.
+    // Open every disclosure rather than assuming an order — the result view
+    // gained sections over time, and which one comes first is presentation,
+    // not the property under test.
+    const disclosures = page.getByText("متن اصلی آلمانی");
+    const count = await disclosures.count();
+    for (let index = 0; index < count; index += 1) {
+      await disclosures.nth(index).click();
+    }
+
+    const quotes = page.locator("blockquote[lang='de']");
+    await expect(quotes.first()).toHaveAttribute("dir", "ltr");
+    // The deadline's German wording is present somewhere in the evidence.
+    await expect(quotes.filter({ hasText: "August 2026" }).first()).toBeVisible();
 
     await expectNoSeriousA11yViolations(page);
   });
@@ -137,14 +154,20 @@ test.describe("upload flow — accessibility", () => {
       buffer: PNG_BYTES,
     });
 
-    // Tab to the analyze button and activate it without touching the mouse.
+    // Reach the analyze button and activate it without touching the mouse.
+    // The button is disabled until the chosen file registers in React state,
+    // so wait for that transition first — focusing a disabled button and
+    // pressing Enter silently does nothing.
     const analyze = page.getByRole("button", { name: "Explain this letter" });
+    await expect(analyze).toBeEnabled();
     await analyze.focus();
     await expect(analyze).toBeFocused();
     await page.keyboard.press("Enter");
 
     await expect(page.getByRole("heading", { name: "What this letter says" })).toBeVisible({
-      timeout: 15_000,
+      // Generous: desktop and mobile projects run in parallel against one dev
+      // server, so first-paint of a route can queue behind a compile.
+      timeout: 30_000,
     });
   });
 
