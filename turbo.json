@@ -5,7 +5,13 @@
       "dependsOn": ["^build"],
       "outputs": [".next-build/**", "!.next-build/cache/**", "dist/**"]
     },
-    "lint": {},
+    // Packages that compile to dist/ (e.g. @wg/validation) must be built
+    // before dependents can be linted, typechecked or tested — otherwise the
+    // imports resolve to nothing and the failure only shows on a clean
+    // checkout, never on a developer machine with stale build output.
+    "lint": {
+      "dependsOn": ["^build"]
+    },
     "typecheck": {
       "dependsOn": ["^build"]
     },

@@ -31,8 +31,11 @@ jobs:
       - name: Install (frozen lockfile)
         run: pnpm install --frozen-lockfile
 
+      # The trailing "..." builds @wg/web *and its workspace dependencies* in
+      # dependency order. Without it, packages that compile to dist/ are
+      # missing and the build fails on a clean checkout.
       - name: Build static site
-        run: pnpm --filter @wg/web build
+        run: pnpm exec turbo run build --filter=@wg/web...
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
