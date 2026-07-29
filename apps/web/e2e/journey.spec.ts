@@ -1,4 +1,4 @@
-import AxeBuilder from "@axe-core/playwright";
+﻿import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type Page } from "@playwright/test";
 
 /** Fail on serious/critical WCAG violations (axe-core, WCAG 2.x A+AA tags). */
@@ -49,20 +49,20 @@ test.describe("language selection", () => {
     // Language cards come first in DOM order (theme toggle is after main).
     await page.keyboard.press("Tab");
     await page.keyboard.press("Enter");
-    await expect(page).toHaveURL(/\/(en|prs)$/);
+    await expect(page).toHaveURL(/\/(en|prs)\/$/);
   });
 
   test("choosing English lands on the English home page", async ({ page }) => {
     await page.goto("/");
     await page.getByRole("link", { name: /English/ }).click();
-    await expect(page).toHaveURL(/\/en$/);
+    await expect(page).toHaveURL(/\/en\/$/);
     await expect(page.getByRole("heading", { level: 1 })).toContainText("German letter");
   });
 
   test("language choice is remembered in localStorage only", async ({ page }) => {
     await page.goto("/");
     await page.getByRole("link", { name: /دری/ }).click();
-    await expect(page).toHaveURL(/\/prs$/);
+    await expect(page).toHaveURL(/\/prs\/$/);
     const stored = await page.evaluate(() => window.localStorage.getItem("wg.language"));
     expect(stored).toBe("prs");
     // No cookies involved in the language mechanism.
@@ -83,7 +83,7 @@ test.describe("English journey", () => {
   test("legal pages are reachable from the footer and marked as drafts", async ({ page }) => {
     await page.goto("/en");
     await page.getByRole("link", { name: "Privacy", exact: true }).click();
-    await expect(page).toHaveURL(/\/en\/privacy$/);
+    await expect(page).toHaveURL(/\/en\/privacy\/$/);
     await expect(page.getByText(/pending professional legal review/i)).toBeVisible();
     await expectNoSeriousA11yViolations(page);
 
@@ -118,9 +118,14 @@ test.describe("Dari (RTL) journey", () => {
   });
 });
 
-test.describe("unknown locale", () => {
-  test("returns 404", async ({ page }) => {
-    const response = await page.goto("/de");
-    expect(response?.status()).toBe(404);
-  });
-});
+/**
+ * Unknown locales (e.g. /de) are intentionally NOT covered here.
+ *
+ * The site is a static export: paths outside generateStaticParams simply do
+ * not exist as files, so the host serves the generated 404.html. The Next dev
+ * server instead raises a build-time style error for the same request, so a
+ * dev-server assertion would test something users never experience.
+ *
+ * The real behaviour is verified against the build output by
+ * `scripts/verify-static-export.mjs`, which runs in CI after every build.
+ */
