@@ -16,6 +16,12 @@ services:
     plan: free
     region: frankfurt # EU processing, per master-spec §8
     healthCheckPath: /health
+    # Redeploy on every push to main. Without this the service silently keeps
+    # serving whatever was built when the blueprint was first applied — /health
+    # answers "ok" while newly added routes 404. See /version for what is
+    # actually running.
+    autoDeploy: true
+    branch: main
     envVars:
       - key: NODE_ENV
         value: production
