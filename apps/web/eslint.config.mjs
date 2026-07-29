@@ -1,10 +1,10 @@
 import base from "@wg/eslint-config";
+import next from "@wg/eslint-config/next";
 
-// Next.js-specific lint rules (@next/eslint-plugin-next, jsx-a11y) are added
-// in Stage 2 together with the real UI work.
 export default [
   ...base,
+  ...next,
   {
-    ignores: ["next-env.d.ts", ".next/**"],
+    ignores: ["next-env.d.ts", ".next/**", "playwright-report/**", "test-results/**"],
   },
 ];

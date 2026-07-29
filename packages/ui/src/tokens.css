@@ -1,0 +1,118 @@
+/**
+ * Welcome Germany — design tokens.
+ * Character: "quiet precision" — warm paper surfaces, deep teal primary,
+ * crisp edges, restrained depth. Dark theme follows the system automatically.
+ *
+ * Contrast: all text/background pairs below meet WCAG 2.2 AA (≥4.5:1 normal
+ * text, ≥3:1 large text). Any new pair must be checked before use.
+ */
+
+:root {
+  /* Surfaces */
+  --wg-canvas: #faf8f4;
+  --wg-surface: #ffffff;
+  --wg-raised: #f1eee7;
+
+  /* Lines */
+  --wg-line: #e4dfd4;
+  --wg-line-strong: #c6bfaf;
+
+  /* Ink */
+  --wg-ink: #1c2321;
+  --wg-ink-muted: #55625e;
+  --wg-ink-faint: #7a8683; /* large text / decorative only */
+
+  /* Primary — deep teal */
+  --wg-primary: #0b6b60;
+  --wg-primary-strong: #084f47;
+  --wg-primary-contrast: #ffffff;
+  --wg-primary-soft: #ddeeea;
+  --wg-primary-soft-ink: #084f47;
+
+  /* Semantic tones (background / ink / border) — never color-only signals */
+  --wg-info-bg: #e5eef4;
+  --wg-info-ink: #17516d;
+  --wg-info-line: #b9d2e0;
+
+  --wg-success-bg: #e2f0e6;
+  --wg-success-ink: #1c5c33;
+  --wg-success-line: #b4d6bf;
+
+  --wg-warn-bg: #f9efd8;
+  --wg-warn-ink: #6b4a00;
+  --wg-warn-line: #e3cc96;
+
+  --wg-danger-bg: #f9e6e3;
+  --wg-danger-ink: #8c2b22;
+  --wg-danger-line: #e5bab3;
+
+  /* Focus */
+  --wg-focus: #0b6b60;
+
+  /* Radii — crisp, technical */
+  --wg-radius-sm: 6px;
+  --wg-radius-md: 10px;
+  --wg-radius-lg: 14px;
+
+  /* Elevation — barely-there in light theme */
+  --wg-shadow-1: 0 1px 2px rgb(28 35 33 / 0.05), 0 3px 10px rgb(28 35 33 / 0.05);
+  --wg-shadow-2: 0 2px 4px rgb(28 35 33 / 0.06), 0 10px 28px rgb(28 35 33 / 0.09);
+
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --wg-canvas: #0e1413;
+    --wg-surface: #151c1b;
+    --wg-raised: #1b2422;
+
+    --wg-line: #263130;
+    --wg-line-strong: #3b4845;
+
+    --wg-ink: #e9edeb;
+    --wg-ink-muted: #a3b1ac;
+    --wg-ink-faint: #7e8c88;
+
+    --wg-primary: #3cc5b3;
+    --wg-primary-strong: #5cd6c6;
+    --wg-primary-contrast: #062720;
+    --wg-primary-soft: #123029;
+    --wg-primary-soft-ink: #7fdccd;
+
+    --wg-info-bg: #122833;
+    --wg-info-ink: #9ccdea;
+    --wg-info-line: #234a5e;
+
+    --wg-success-bg: #12291a;
+    --wg-success-ink: #9bd6ae;
+    --wg-success-line: #26543a;
+
+    --wg-warn-bg: #2d2410;
+    --wg-warn-ink: #e5c778;
+    --wg-warn-line: #5b4a1e;
+
+    --wg-danger-bg: #331a17;
+    --wg-danger-ink: #eba79e;
+    --wg-danger-line: #663029;
+
+    --wg-focus: #4fd1c0;
+
+    --wg-shadow-1: 0 0 0 1px rgb(255 255 255 / 0.02);
+    --wg-shadow-2: 0 0 0 1px rgb(255 255 255 / 0.03);
+
+    color-scheme: dark;
+  }
+}
+
+/* Motion discipline: respect users who ask for less. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

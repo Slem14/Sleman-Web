@@ -1,0 +1,96 @@
+@import "tailwindcss";
+@import "@wg/ui/tokens.css";
+
+/* Component classes from the shared UI package are compiled here. */
+@source "../../../packages/ui/src";
+
+@theme inline {
+  /* Colors — semantic names mapped onto design tokens (light/dark aware). */
+  --color-canvas: var(--wg-canvas);
+  --color-surface: var(--wg-surface);
+  --color-raised: var(--wg-raised);
+  --color-line: var(--wg-line);
+  --color-line-strong: var(--wg-line-strong);
+  --color-ink: var(--wg-ink);
+  --color-ink-muted: var(--wg-ink-muted);
+  --color-ink-faint: var(--wg-ink-faint);
+  --color-primary: var(--wg-primary);
+  --color-primary-strong: var(--wg-primary-strong);
+  --color-primary-contrast: var(--wg-primary-contrast);
+  --color-primary-soft: var(--wg-primary-soft);
+  --color-primary-soft-ink: var(--wg-primary-soft-ink);
+  --color-info-bg: var(--wg-info-bg);
+  --color-info-ink: var(--wg-info-ink);
+  --color-info-line: var(--wg-info-line);
+  --color-success-bg: var(--wg-success-bg);
+  --color-success-ink: var(--wg-success-ink);
+  --color-success-line: var(--wg-success-line);
+  --color-warn-bg: var(--wg-warn-bg);
+  --color-warn-ink: var(--wg-warn-ink);
+  --color-warn-line: var(--wg-warn-line);
+  --color-danger-bg: var(--wg-danger-bg);
+  --color-danger-ink: var(--wg-danger-ink);
+  --color-danger-line: var(--wg-danger-line);
+  --color-focus: var(--wg-focus);
+
+  /* Radii */
+  --radius-sm: var(--wg-radius-sm);
+  --radius-md: var(--wg-radius-md);
+  --radius-lg: var(--wg-radius-lg);
+
+  /* Elevation */
+  --shadow-card: var(--wg-shadow-1);
+  --shadow-card-lg: var(--wg-shadow-2);
+
+  /* Typography. Vazirmatn covers Arabic script; Latin-only fonts fall through. */
+  --font-sans: var(--font-inter), var(--font-vazirmatn), ui-sans-serif, system-ui, sans-serif;
+  --font-display:
+    var(--font-space-grotesk), var(--font-vazirmatn), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, "Cascadia Code", "JetBrains Mono", Consolas, monospace;
+}
+
+@layer base {
+  body {
+    background-color: var(--wg-canvas);
+    color: var(--wg-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2 {
+    font-family: var(--font-display);
+    letter-spacing: -0.015em;
+  }
+
+  /* Visible focus everywhere, tokens-driven (WCAG 2.4.7 / 2.4.13). */
+  :focus-visible {
+    outline: 2px solid var(--wg-focus);
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background: var(--wg-primary-soft);
+    color: var(--wg-primary-soft-ink);
+  }
+}
+
+/* Skip link: hidden until keyboard-focused (a11y foundation). */
+.skip-link {
+  position: absolute;
+  inset-inline-start: 0.75rem;
+  top: 0.75rem;
+  z-index: 50;
+  transform: translateY(-300%);
+  transition: transform 120ms;
+  background: var(--wg-surface);
+  color: var(--wg-ink);
+  border: 1px solid var(--wg-line-strong);
+  border-radius: var(--wg-radius-sm);
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+}
+.skip-link:focus-visible {
+  transform: translateY(0);
+}

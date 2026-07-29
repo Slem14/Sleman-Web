@@ -1,0 +1,21 @@
+{
+  "name": "@wg/i18n",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@wg/eslint-config": "workspace:*",
+    "@wg/typescript-config": "workspace:*",
+    "eslint": "^9.30.0",
+    "typescript": "^5.9.0",
+    "vitest": "^3.2.0"
+  }
+}

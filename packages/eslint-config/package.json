@@ -4,10 +4,13 @@
   "private": true,
   "type": "module",
   "exports": {
-    ".": "./base.mjs"
+    ".": "./base.mjs",
+    "./next": "./next.mjs"
   },
   "dependencies": {
+    "@next/eslint-plugin-next": "^15.5.0",
     "eslint-config-prettier": "^10.1.0",
+    "eslint-plugin-jsx-a11y": "^6.10.0",
     "typescript-eslint": "^8.38.0"
   },
   "peerDependencies": {

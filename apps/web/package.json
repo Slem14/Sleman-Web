@@ -7,20 +7,27 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
+    "@wg/i18n": "workspace:*",
+    "@wg/ui": "workspace:*",
     "next": "^15.5.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.10.0",
+    "@playwright/test": "^1.54.0",
+    "@tailwindcss/postcss": "^4.1.0",
     "@types/node": "^24.0.0",
     "@types/react": "^19.1.0",
     "@types/react-dom": "^19.1.0",
     "@wg/eslint-config": "workspace:*",
     "@wg/typescript-config": "workspace:*",
     "eslint": "^9.30.0",
+    "tailwindcss": "^4.1.0",
     "typescript": "^5.9.0"
   }
 }

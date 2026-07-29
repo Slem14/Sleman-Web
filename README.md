@@ -2,7 +2,7 @@
 
 A privacy-first web application that helps people who don't read German understand German administrative letters — structured explanations (sender, deadlines, required actions, evidence) in their language, with an optional German reply draft. First languages: **English** and **Dari (دری)**. No accounts, no stored documents.
 
-> **Project status: Stage 0 complete (discovery & risk definition) — awaiting go for Stage 1 (architecture & repository foundation).** No application code exists yet, by design. See the staged plan in [docs/product/master-spec.md §21](docs/product/master-spec.md).
+> **Project status: Stage 2 complete (design system, English/Dari i18n with RTL, static journey) — awaiting go for Stage 3 (upload pipeline with stub analysis).** See the staged plan in [docs/product/master-spec.md §21](docs/product/master-spec.md).
 
 ## Documentation map
 
