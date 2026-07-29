@@ -59,6 +59,11 @@ jobs:
       - name: Install (frozen lockfile)
         run: pnpm install --frozen-lockfile
 
+      # Both dev servers import @wg/validation, which compiles to dist/.
+      # Without this the API cannot start and Playwright times out waiting.
+      - name: Build workspace packages
+        run: pnpm exec turbo run build
+
       - name: Install Playwright browsers
         run: pnpm --filter @wg/web exec playwright install --with-deps chromium
 
