@@ -63,7 +63,7 @@ export default async function LocaleLayout({
         </a>
 
         <header className="sticky top-0 z-40 header-blur border-b border-line">
-          <div className="mx-auto max-w-4xl px-6 py-3.5 flex items-center justify-between gap-4">
+          <div className="mx-auto max-w-6xl px-6 py-3.5 flex items-center justify-between gap-4">
             <Link
               href={`/${locale}`}
               className="font-mono text-sm font-bold uppercase tracking-[0.15em] text-ink hover:text-primary transition-colors"
@@ -88,12 +88,12 @@ export default async function LocaleLayout({
           </div>
         </header>
 
-        <main id="main" className="flex-1 w-full mx-auto max-w-4xl px-6 py-10">
+        <main id="main" className="flex-1 w-full mx-auto max-w-6xl px-6 py-10">
           {children}
         </main>
 
         <footer className="border-t border-line bg-surface mt-16">
-          <div className="mx-auto max-w-4xl px-6 py-8">
+          <div className="mx-auto max-w-6xl px-6 py-8">
             <nav aria-label={m.footer.privacy} className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
               <Link href={`/${locale}/privacy`} className="text-ink-muted hover:text-primary">
                 {m.footer.privacy}

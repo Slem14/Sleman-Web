@@ -1,6 +1,7 @@
 import { UPCOMING_LANGUAGES } from "@wg/i18n";
 import { ThemeToggle } from "../theme";
 import { LanguagePicker } from "./language-picker";
+import { LiveGreeting } from "./live-greeting";
 
 /**
  * The first meaningful interaction: choose your language (master-spec §6).
@@ -10,21 +11,16 @@ import { LanguagePicker } from "./language-picker";
 export default function LanguageSelectPage() {
   return (
     <div className="min-h-dvh flex flex-col p-6">
-      <main className="w-full max-w-xl mx-auto flex-1 flex flex-col justify-center py-10">
-        <h1 className="sr-only">Welcome Germany — Choose your language</h1>
+      <main className="w-full max-w-5xl mx-auto flex-1 flex flex-col justify-center py-12">
+        <LiveGreeting />
 
-        <p className="font-mono text-xs font-bold uppercase tracking-[0.3em] text-ink-muted text-center">
-          Welcome<span className="text-primary"> Germany</span>
-        </p>
-        <p aria-hidden="true" className="mt-3 mb-10 text-center text-4xl select-none">
-          🌐
-        </p>
-
-        <LanguagePicker />
+        <div className="mt-12">
+          <LanguagePicker />
+        </div>
 
         {/* Coming soon — visible, honest, not clickable. */}
         <ul
-          className="mt-10 grid grid-cols-2 sm:grid-cols-4 gap-3"
+          className="mt-8 grid grid-cols-2 sm:grid-cols-4 gap-3"
           aria-label="Languages coming soon"
         >
           {UPCOMING_LANGUAGES.map((lang) => (
@@ -46,7 +42,7 @@ export default function LanguageSelectPage() {
         </ul>
       </main>
 
-      <div className="fixed top-5 end-5">
+      <div className="fixed top-5 end-5 z-40">
         <ThemeToggle labelToDark="Switch to dark mode" labelToLight="Switch to light mode" />
       </div>
     </div>

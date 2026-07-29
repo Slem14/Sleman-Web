@@ -39,7 +39,7 @@ export function LanguagePicker() {
   };
 
   return (
-    <nav aria-label="Language selection" className="grid gap-4">
+    <nav aria-label="Language selection" className="grid gap-4 sm:grid-cols-2">
       {LOCALES.map((locale) => {
         const m = getMessages(locale);
         return (

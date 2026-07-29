@@ -67,9 +67,9 @@ describe("LanguageCard", () => {
         nativeDir="rtl"
       />,
     );
-    const native = screen.getByText("دری");
-    expect(native).toHaveAttribute("lang", "prs");
-    expect(native).toHaveAttribute("dir", "rtl");
+    const langBlock = screen.getByText("دری").closest("[lang]");
+    expect(langBlock).toHaveAttribute("lang", "prs");
+    expect(langBlock).toHaveAttribute("dir", "rtl");
     expect(screen.getByRole("link")).toHaveAttribute("href", "/prs");
   });
 });

@@ -9,7 +9,7 @@ export interface Step {
  */
 export function Steps({ steps }: { steps: ReadonlyArray<Step> }) {
   return (
-    <ol className="grid gap-4 sm:grid-cols-2">
+    <ol className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
       {steps.map((step, i) => (
         <li
           key={step.title}
