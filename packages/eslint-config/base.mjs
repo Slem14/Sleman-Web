@@ -42,5 +42,11 @@ export default tseslint.config(
     files: ["**/*.mjs", "**/*.js"],
     extends: [tseslint.configs.disableTypeChecked],
   },
+  {
+    // Build/verification scripts are CLI tools: printing to stdout is their
+    // purpose, unlike application code where logging is a privacy control.
+    files: ["**/scripts/**"],
+    rules: { "no-console": "off" },
+  },
   prettier,
 );

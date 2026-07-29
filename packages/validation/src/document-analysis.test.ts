@@ -78,7 +78,6 @@ describe("documentAnalysisSchema", () => {
 
   it("rejects invented confidence percentages (only high/medium/low exist)", () => {
     const doc = validAnalysis();
-    // @ts-expect-error deliberately wrong
     doc.documentType.confidence = "87%";
     expect(documentAnalysisSchema.safeParse(doc).success).toBe(false);
   });
