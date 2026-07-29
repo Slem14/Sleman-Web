@@ -7,8 +7,10 @@ export interface ApiConfig {
   host: string;
   logLevel: "fatal" | "error" | "warn" | "info" | "debug";
   nodeEnv: "development" | "test" | "production";
-  /** Exact browser origin allowed by CORS — deny-by-default (TB-1). */
+  /** Raw configured value, kept for logging and tests. */
   webOrigin: string;
+  /** Exact browser origins allowed by CORS — deny-by-default (TB-1). */
+  allowedOrigins: string[];
   /** Which DocumentAnalysisProvider implementation to use. */
   provider: "stub" | "anthropic" | "gemini";
   /** Credentials and model for the real provider (absent when using the stub). */
@@ -33,7 +35,9 @@ const NODE_ENVS = new Set(["development", "test", "production"]);
 const PROVIDERS = new Set(["stub", "anthropic", "gemini"]);
 
 export function loadConfig(env: NodeJS.ProcessEnv = process.env): ApiConfig {
-  const port = Number(env.API_PORT ?? 3001);
+  // Container hosts (Render, Cloud Run, Fly) inject PORT and expect the
+  // process to bind it. API_PORT stays supported for local development.
+  const port = Number(env.PORT ?? env.API_PORT ?? 3001);
   if (!Number.isInteger(port) || port < 1 || port > 65535) {
     throw new Error(`Invalid API_PORT: ${env.API_PORT}`);
   }
@@ -50,7 +54,13 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): ApiConfig {
     throw new Error(`Invalid NODE_ENV: ${nodeEnv}`);
   }
 
+  // Comma-separated so one deployment can serve the production site and a
+  // local dev build without weakening the deny-by-default rule.
   const webOrigin = env.WEB_ORIGIN ?? "http://localhost:3000";
+  const allowedOrigins = webOrigin
+    .split(",")
+    .map((origin) => origin.trim())
+    .filter((origin) => origin !== "");
 
   const provider = env.ANALYSIS_PROVIDER ?? "stub";
   if (!PROVIDERS.has(provider)) {
@@ -73,6 +83,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): ApiConfig {
     logLevel: logLevel as ApiConfig["logLevel"],
     nodeEnv: nodeEnv as ApiConfig["nodeEnv"],
     webOrigin,
+    allowedOrigins,
     provider: provider as ApiConfig["provider"],
     rateLimitMax,
     requestTimeoutMs,

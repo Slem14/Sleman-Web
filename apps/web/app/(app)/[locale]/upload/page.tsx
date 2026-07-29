@@ -35,18 +35,33 @@ export default async function UploadPage({ params }: { params: Promise<{ locale:
     process.env.NEXT_PUBLIC_API_BASE_URL ??
     (process.env.NODE_ENV === "development" ? "http://127.0.0.1:3001" : "");
 
+  // Set at build time while the analysis runs on a free provider tier, whose
+  // terms do not guarantee the no-training promise the privacy notice makes.
+  const isTestMode = process.env.NEXT_PUBLIC_TEST_MODE === "true";
+
   return (
     <div className="max-w-3xl">
       <h1 className="text-3xl sm:text-4xl font-bold text-ink leading-tight">{m.title}</h1>
       <p className="mt-4 text-lg text-ink-muted leading-relaxed">{m.lead}</p>
 
-      <div className="mt-10">
+      <div className="mt-10 space-y-6">
         {apiBaseUrl === "" ? (
           <Alert tone="info" title={m.unavailableTitle}>
             {m.unavailableText}
           </Alert>
         ) : (
-          <UploadFlow apiBaseUrl={apiBaseUrl} locale={locale} m={m} />
+          <>
+            {/* While the deployment runs on a free provider tier, the page
+                must contradict the privacy notice's no-training promise
+                rather than let a user act on it. Removed when a reviewed
+                provider agreement is in place (see the Stage 8 gates). */}
+            {isTestMode ? (
+              <Alert tone="warning" title={m.testModeTitle}>
+                {m.testModeText}
+              </Alert>
+            ) : null}
+            <UploadFlow apiBaseUrl={apiBaseUrl} locale={locale} m={m} />
+          </>
         )}
       </div>
     </div>

@@ -36,6 +36,18 @@ jobs:
       # missing and the build fails on a clean checkout.
       - name: Build static site
         run: pnpm exec turbo run build --filter=@wg/web...
+        env:
+          # Public base URL of the analysis API. Inlined into the client bundle
+          # at build time, so it must be the URL the BROWSER can reach. Set as
+          # a repository variable (Settings → Secrets and variables → Actions →
+          # Variables). Left empty, the upload page shows an honest
+          # "not switched on yet" state rather than a control that cannot work.
+          NEXT_PUBLIC_API_BASE_URL: ${{ vars.NEXT_PUBLIC_API_BASE_URL }}
+          # "true" while the analysis runs on a free provider tier, whose terms
+          # do not guarantee the no-training promise the privacy notice makes.
+          # Makes the upload page warn users. Remove once a reviewed provider
+          # agreement is in place.
+          NEXT_PUBLIC_TEST_MODE: ${{ vars.NEXT_PUBLIC_TEST_MODE }}
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3

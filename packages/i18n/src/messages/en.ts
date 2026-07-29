@@ -126,6 +126,13 @@ export const en = {
     unavailableTitle: "Uploading is not switched on yet",
     unavailableText:
       "This preview does not include the analysis service yet. It is coming in the next release.",
+    // Shown whenever the live deployment runs on a free provider tier. The
+    // privacy notice promises no training on uploads; a free tier does not
+    // guarantee that, so the page must say so plainly rather than let the
+    // promise stand where it is not yet true.
+    testModeTitle: "Test version — please do not upload a real letter",
+    testModeText:
+      "This is an unfinished test. Letters sent here are analyzed by a free AI service, which may keep them and use them to improve its models. Please try it with a made-up letter, not with your real post. The full privacy protections described on this site apply from the public launch onwards.",
   },
   privacyPage: {
     title: "Privacy Notice",

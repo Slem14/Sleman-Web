@@ -104,7 +104,7 @@ export async function buildServer(
   // not subject to CORS and pass through untouched.
   await app.register(cors, {
     origin: (origin, callback) => {
-      if (origin === undefined || origin === config.webOrigin) {
+      if (origin === undefined || config.allowedOrigins.includes(origin)) {
         callback(null, true);
         return;
       }
