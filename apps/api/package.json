@@ -12,6 +12,10 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@fastify/cors": "^11.0.0",
+    "@fastify/multipart": "^9.0.0",
+    "@fastify/rate-limit": "^10.3.0",
+    "@wg/validation": "workspace:*",
     "fastify": "^5.4.0"
   },
   "devDependencies": {

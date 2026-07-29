@@ -2,7 +2,7 @@ import { buildServer } from "./server.js";
 import { loadConfig } from "./config.js";
 
 const config = loadConfig();
-const app = buildServer(config);
+const app = await buildServer(config);
 
 // Graceful shutdown: stop accepting connections, let in-flight requests
 // finish. Critical later so document processing always reaches its cleanup
