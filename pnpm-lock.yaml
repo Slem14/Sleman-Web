@@ -29,6 +29,18 @@ importers:
 
   apps/api:
     dependencies:
+      '@fastify/cors':
+        specifier: ^11.0.0
+        version: 11.3.0
+      '@fastify/multipart':
+        specifier: ^9.0.0
+        version: 9.4.0
+      '@fastify/rate-limit':
+        specifier: ^10.3.0
+        version: 10.3.0
+      '@wg/validation':
+        specifier: workspace:*
+        version: link:../../packages/validation
       fastify:
         specifier: ^5.4.0
         version: 5.10.0
@@ -610,6 +622,15 @@ packages:
   '@fastify/ajv-compiler@4.0.5':
     resolution: {integrity: sha512-KoWKW+MhvfTRWL4qrhUwAAZoaChluo0m0vbiJlGMt2GXvL4LVPQEjt8kSpHI3IBq5Rez8fg+XeH3cneztq+C7A==}
 
+  '@fastify/busboy@3.2.0':
+    resolution: {integrity: sha512-m9FVDXU3GT2ITSe0UaMA5rU3QkfC/UXtCU8y0gSN/GugTqtVldOBWIB5V6V3sbmenVZUIpU6f+mPEO2+m5iTaA==}
+
+  '@fastify/cors@11.3.0':
+    resolution: {integrity: sha512-ggQGua+xHv1MvePbPr0v//xLYEsCXbWspquXCJS9Ot5YoRXq8J8ZWzHnxDBVnbtXosvistXo6LtNzOJswf64Fw==}
+
+  '@fastify/deepmerge@3.2.1':
+    resolution: {integrity: sha512-N5Oqvltoa2r9z1tbx4xjky0oRR60v+T47Ic4J1ukoVQcptLOrIdRnCSdTGmOmajZuHVKlTnfcmrjyqsGEW1ztA==}
+
   '@fastify/error@4.2.0':
     resolution: {integrity: sha512-RSo3sVDXfHskiBZKBPRgnQTtIqpi/7zhJOEmAxCiBcM7d0uwdGdxLlsCaLzGs8v8NnxIRlfG0N51p5yFaOentQ==}
 
@@ -622,8 +643,14 @@ packages:
   '@fastify/merge-json-schemas@0.2.1':
     resolution: {integrity: sha512-OA3KGBCy6KtIvLf8DINC5880o5iBlDX4SxzLQS8HorJAbqluzLRn80UXU0bxZn7UOFhFgpRJDasfwn9nG4FG4A==}
 
+  '@fastify/multipart@9.4.0':
+    resolution: {integrity: sha512-Z404bzZeLSXTBmp/trCBuoVFX28pM7rhv849Q5TsbTFZHuk1lc4QjQITTPK92DKVpXmNtJXeHSSc7GYvqFpxAQ==}
+
   '@fastify/proxy-addr@5.1.0':
     resolution: {integrity: sha512-INS+6gh91cLUjB+PVHfu1UqcB76Sqtpyp7bnL+FYojhjygvOPA9ctiD/JDKsyD9Xgu4hUhCSJBPig/w7duNajw==}
+
+  '@fastify/rate-limit@10.3.0':
+    resolution: {integrity: sha512-eIGkG9XKQs0nyynatApA3EVrojHOuq4l6fhB4eeCk4PIOeadvOJz9/4w3vGI44Go17uaXOWEcPkaD8kuKm7g6Q==}
 
   '@humanfs/core@0.19.2':
     resolution: {integrity: sha512-UhXNm+CFMWcbChXywFwkmhqjs3PRCmcSa/hfBgLIb7oQ5HNb1wS0icWsGtSAUNgefHeI+eBrA8I1fxmbHsGdvA==}
@@ -813,6 +840,10 @@ packages:
 
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
+
+  '@lukeed/ms@2.0.2':
+    resolution: {integrity: sha512-9I2Zn6+NJLfaGoz9jN3lpwDgAYvfGeNYdbAIjJOqzs4Tpc+VU3Jqq4IofSUBKajiDS8k9fZIg18/z13mpk1bsA==}
+    engines: {node: '>=8'}
 
   '@next/env@15.5.22':
     resolution: {integrity: sha512-O5BlKb3KtsHkvO0gjjV66PuJnAgCtIEIzwkt50HRAHsQkU1t77eksIXSZV84/WMtZJjWrnDUPKHVRi0D62nSAA==}
@@ -1840,6 +1871,12 @@ packages:
 
   fast-uri@4.1.1:
     resolution: {integrity: sha512-YPOs1zD5TG2+EZt+r88LwF6mclA7TPkpwMP7ZN3TO2HiHS8TXvq7QA/17iJsV9dubcLo/f8eEYqMBruyQV21hQ==}
+
+  fastify-plugin@5.1.0:
+    resolution: {integrity: sha512-FAIDA8eovSt5qcDgcBvDuX/v0Cjz0ohGhENZ/wpc3y+oZCY2afZ9Baqql3g/lC+OHRnciQol4ww7tuthOb9idw==}
+
+  fastify-plugin@6.0.0:
+    resolution: {integrity: sha512-fZOty7z3O7vOliF6d8bHE3wiEh1KcNnKEQensSgTk9C1DvN6nRLS++XVd86v33Hw/8u9Un8A1zDrQ8ujcQDHEg==}
 
   fastify@5.10.0:
     resolution: {integrity: sha512-A9L0ziuWGQHgEEVgF3davQ9vbD93IuX+lo2IsxapQmu5b/Y/ynn9m9K5JHt9dvyJXOFc5iN0Zk5GHEOqnzhWjg==}
@@ -3613,6 +3650,15 @@ snapshots:
       ajv-formats: 3.0.1(ajv@8.20.0)
       fast-uri: 3.1.4
 
+  '@fastify/busboy@3.2.0': {}
+
+  '@fastify/cors@11.3.0':
+    dependencies:
+      fastify-plugin: 6.0.0
+      toad-cache: 3.7.4
+
+  '@fastify/deepmerge@3.2.1': {}
+
   '@fastify/error@4.2.0': {}
 
   '@fastify/fast-json-stringify-compiler@5.1.0':
@@ -3625,10 +3671,24 @@ snapshots:
     dependencies:
       dequal: 2.0.3
 
+  '@fastify/multipart@9.4.0':
+    dependencies:
+      '@fastify/busboy': 3.2.0
+      '@fastify/deepmerge': 3.2.1
+      '@fastify/error': 4.2.0
+      fastify-plugin: 5.1.0
+      secure-json-parse: 4.1.0
+
   '@fastify/proxy-addr@5.1.0':
     dependencies:
       '@fastify/forwarded': 3.0.2
       ipaddr.js: 2.4.0
+
+  '@fastify/rate-limit@10.3.0':
+    dependencies:
+      '@lukeed/ms': 2.0.2
+      fastify-plugin: 5.1.0
+      toad-cache: 3.7.4
 
   '@humanfs/core@0.19.2':
     dependencies:
@@ -3761,6 +3821,8 @@ snapshots:
     dependencies:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
+
+  '@lukeed/ms@2.0.2': {}
 
   '@next/env@15.5.22': {}
 
@@ -4825,6 +4887,10 @@ snapshots:
   fast-uri@3.1.4: {}
 
   fast-uri@4.1.1: {}
+
+  fastify-plugin@5.1.0: {}
+
+  fastify-plugin@6.0.0: {}
 
   fastify@5.10.0:
     dependencies:

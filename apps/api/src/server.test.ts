@@ -6,7 +6,7 @@ const testConfig = loadConfig({ NODE_ENV: "test", LOG_LEVEL: "error" });
 
 describe("health endpoints", () => {
   it("GET /health returns ok", async () => {
-    const app = buildServer(testConfig);
+    const app = await buildServer(testConfig);
     const res = await app.inject({ method: "GET", url: "/health" });
     expect(res.statusCode).toBe(200);
     expect(res.json()).toEqual({ status: "ok" });
@@ -14,7 +14,7 @@ describe("health endpoints", () => {
   });
 
   it("GET /ready returns ready", async () => {
-    const app = buildServer(testConfig);
+    const app = await buildServer(testConfig);
     const res = await app.inject({ method: "GET", url: "/ready" });
     expect(res.statusCode).toBe(200);
     expect(res.json()).toEqual({ status: "ready" });
@@ -22,7 +22,7 @@ describe("health endpoints", () => {
   });
 
   it("unknown routes return 404 without leaking internals", async () => {
-    const app = buildServer(testConfig);
+    const app = await buildServer(testConfig);
     const res = await app.inject({ method: "GET", url: "/nope" });
     expect(res.statusCode).toBe(404);
     await app.close();
