@@ -44,6 +44,13 @@ export const UPLOAD_ERROR_CODES = [
   "NO_FILE",
   "RATE_LIMITED",
   "PROVIDER_ERROR",
+  /**
+   * The provider's safety classifiers declined this document. Distinct from
+   * PROVIDER_ERROR because the user-facing answer is different: nothing is
+   * broken, this particular letter cannot be handled automatically, and the
+   * right advice is to seek qualified human help.
+   */
+  "ANALYSIS_REFUSED",
   "INTERNAL_ERROR",
 ] as const;
 

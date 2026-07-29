@@ -3,6 +3,8 @@ import type { FastifyInstance } from "fastify";
 import type { ApiConfig } from "../config.js";
 import { validateUpload } from "../files/validate-upload.js";
 import { ProviderError, type DocumentAnalysisProvider } from "../providers/types.js";
+import { applyPostChecks } from "../safety/post-checks.js";
+import { applyRiskEscalation } from "../safety/risk-classifier.js";
 
 /** Locales the analysis can be explained in — mirrors @wg/i18n LOCALES. */
 const OUTPUT_LANGUAGES = new Set(["en", "prs"]);
@@ -10,7 +12,9 @@ const OUTPUT_LANGUAGES = new Set(["en", "prs"]);
 /** Map provider failures to stable public error codes (no internals leak). */
 function providerErrorCode(err: unknown): UploadErrorCode {
   if (err instanceof ProviderError) {
-    return err.kind === "invalid_output" ? "PROVIDER_ERROR" : "PROVIDER_ERROR";
+    // A refusal is not a malfunction — it gets its own code so the UI can say
+    // something useful instead of "try again", which would not help.
+    return err.kind === "refused" ? "ANALYSIS_REFUSED" : "PROVIDER_ERROR";
   }
   return "INTERNAL_ERROR";
 }
@@ -26,6 +30,7 @@ const ERROR_STATUS: Record<UploadErrorCode, number> = {
   INVALID_LANGUAGE: 400,
   RATE_LIMITED: 429,
   PROVIDER_ERROR: 502,
+  ANALYSIS_REFUSED: 422,
   INTERNAL_ERROR: 500,
 };
 
@@ -97,16 +102,31 @@ export function registerAnalysesRoute(
 
         // ---- 4. Analyze via the configured provider. ----------------------
         try {
-          const analysis = await provider.analyze({
+          const raw = await provider.analyze({
             fileBytes,
             mimeType: verdict.mimeType,
             outputLanguage: language,
             requestId: request.id,
           });
-          // Provider output is untrusted until schema-validated; concrete
-          // providers validate internally, and the stub does too — but we
-          // still never echo anything except the validated object.
-          return await reply.status(200).send(analysis);
+
+          // ---- 4a. Deterministic safety layer (master-spec §16 steps 13–14).
+          // The model has spoken; now the parts that must not depend on it.
+          // Post-checks strip claims the quoted German does not support;
+          // escalation adds risk the model may have missed. Neither can make
+          // an analysis less cautious than the model already made it.
+          const checked = applyPostChecks(raw);
+          const escalated = applyRiskEscalation(checked.analysis);
+
+          // Violation counts are C2 metadata — how many, never what.
+          if (checked.violations.length > 0 || escalated.addedFlags.length > 0) {
+            request.wgMeta = {
+              ...request.wgMeta,
+              safetyViolations: checked.violations.length,
+              escalatedFlags: escalated.addedFlags.length,
+            };
+          }
+
+          return await reply.status(200).send(escalated.analysis);
         } catch (err) {
           request.log.warn({ errKind: err instanceof ProviderError ? err.kind : "unknown" });
           return fail(providerErrorCode(err));

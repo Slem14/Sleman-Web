@@ -115,6 +115,10 @@ export const en = {
       NO_FILE: "No file was received. Please choose a file and try again.",
       RATE_LIMITED: "Too many requests right now. Please wait a minute and try again.",
       PROVIDER_ERROR: "The analysis service is not available right now. Please try again shortly.",
+      // Not a malfunction: this document could not be handled automatically.
+      // Trying again will not help, so the advice has to be different.
+      ANALYSIS_REFUSED:
+        "We could not analyse this letter automatically. This can happen with letters about legal or official proceedings. Please ask a qualified person to look at it — a migration counselling service or a lawyer.",
       INTERNAL_ERROR: "Something went wrong on our side. Please try again.",
       NETWORK: "We could not reach the service. Please check your internet connection.",
     },

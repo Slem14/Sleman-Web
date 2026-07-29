@@ -4,6 +4,7 @@ import rateLimit from "@fastify/rate-limit";
 import Fastify, { type FastifyInstance } from "fastify";
 import { randomUUID } from "node:crypto";
 import type { ApiConfig } from "./config.js";
+import { AnthropicProvider } from "./providers/anthropic/adapter.js";
 import { StubProvider } from "./providers/stub.js";
 import type { DocumentAnalysisProvider } from "./providers/types.js";
 import { registerAnalysesRoute } from "./routes/analyses.js";
@@ -28,6 +29,10 @@ export interface WgRequestMeta {
   fileSizeBucket?: string;
   outputLanguage?: string;
   provider?: string;
+  /** How many claims the safety layer stripped — a count, never the content. */
+  safetyViolations?: number;
+  /** How many risk flags the keyword layer added on top of the model's. */
+  escalatedFlags?: number;
 }
 
 declare module "fastify" {
@@ -37,11 +42,25 @@ declare module "fastify" {
 }
 
 function buildProvider(config: ApiConfig): DocumentAnalysisProvider {
-  // Only the stub exists today; Stage 4 adds the first real adapter behind
-  // the same interface (selection stays server-side config, ADR 0004).
+  // Provider selection is server-side configuration only (ADR 0004) — no
+  // request may influence which provider sees a document.
   switch (config.provider) {
     case "stub":
       return new StubProvider();
+    case "anthropic": {
+      const settings = config.anthropic;
+      if (settings === undefined) {
+        throw new Error("anthropic provider selected without credentials");
+      }
+      return new AnthropicProvider({
+        apiKey: settings.apiKey,
+        model: settings.model,
+        baseUrl: settings.baseUrl,
+        // Leave headroom under the request timeout so a slow provider surfaces
+        // as a provider error rather than a dropped connection.
+        timeoutMs: Math.max(5000, config.requestTimeoutMs - 2000),
+      });
+    }
   }
 }
 

@@ -10,7 +10,14 @@ export interface ApiConfig {
   /** Exact browser origin allowed by CORS — deny-by-default (TB-1). */
   webOrigin: string;
   /** Which DocumentAnalysisProvider implementation to use. */
-  provider: "stub";
+  provider: "stub" | "anthropic";
+  /** Credentials and model for the real provider (absent when using the stub). */
+  anthropic?: {
+    apiKey: string;
+    model: string;
+    /** Set only when routing through a gateway rather than the Anthropic API. */
+    baseUrl?: string | undefined;
+  };
   /** Max analysis requests per client per minute (anti-abuse, §19). */
   rateLimitMax: number;
   /** Hard ceiling for a single request lifetime, in milliseconds. */
@@ -19,7 +26,7 @@ export interface ApiConfig {
 
 const LOG_LEVELS = new Set(["fatal", "error", "warn", "info", "debug"]);
 const NODE_ENVS = new Set(["development", "test", "production"]);
-const PROVIDERS = new Set(["stub"]);
+const PROVIDERS = new Set(["stub", "anthropic"]);
 
 export function loadConfig(env: NodeJS.ProcessEnv = process.env): ApiConfig {
   const port = Number(env.API_PORT ?? 3001);
@@ -56,7 +63,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): ApiConfig {
     throw new Error(`Invalid REQUEST_TIMEOUT_MS: ${env.REQUEST_TIMEOUT_MS}`);
   }
 
-  return {
+  const config: ApiConfig = {
     port,
     host,
     logLevel: logLevel as ApiConfig["logLevel"],
@@ -66,4 +73,20 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): ApiConfig {
     rateLimitMax,
     requestTimeoutMs,
   };
+
+  // Credentials are only read when the real provider is selected, so tests and
+  // local development never need a key on disk.
+  if (config.provider === "anthropic") {
+    const apiKey = env.ANTHROPIC_API_KEY ?? "";
+    if (apiKey === "") {
+      throw new Error("ANALYSIS_PROVIDER=anthropic requires ANTHROPIC_API_KEY");
+    }
+    config.anthropic = {
+      apiKey,
+      model: env.ANALYSIS_MODEL ?? "claude-haiku-4-5",
+      baseUrl: env.ANTHROPIC_BASE_URL,
+    };
+  }
+
+  return config;
 }
