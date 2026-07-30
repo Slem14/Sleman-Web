@@ -6,7 +6,8 @@
  *
  *  - every locale page exists as a file (nothing silently missing),
  *  - a 404.html exists (this is what the host serves for unknown paths),
- *  - pre-launch pages carry noindex,
+ *  - the site is indexable and declares canonical URLs,
+ *  - the CNAME ships, so a deploy cannot reset the custom domain,
  *  - no third-party origins are referenced (privacy: fonts must be self-hosted).
  *
  * Exits non-zero on any failure so CI blocks the deploy.
@@ -50,6 +51,19 @@ if (existsSync(join(OUT_DIR, "404.html"))) {
 //    duplicates of one another.
 check("robots.txt is missing", existsSync(join(OUT_DIR, "robots.txt")));
 check("sitemap.xml is missing", existsSync(join(OUT_DIR, "sitemap.xml")));
+
+// 3a. CNAME must ship with the export. GitHub Pages reads the custom domain
+//     from this file on every deploy, and a deploy without it silently resets
+//     the domain — which has already happened once on this project and takes
+//     the whole site offline until someone notices.
+const cnamePath = join(OUT_DIR, "CNAME");
+check("CNAME is missing from the export", existsSync(cnamePath));
+if (existsSync(cnamePath)) {
+  check(
+    "CNAME does not contain the production domain",
+    readFileSync(cnamePath, "utf8").trim() === "welcome-deutschland.de",
+  );
+}
 
 for (const page of ["index.html", "en/index.html", "prs/index.html"]) {
   const file = join(OUT_DIR, page);
