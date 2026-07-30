@@ -31,10 +31,14 @@
   --wg-primary-soft: #ddeeea;
   --wg-primary-soft-ink: #084f47;
 
-  /* Luminous accents (decorative only — never text) */
-  --wg-glow-a: rgb(11 107 96 / 0.16);
-  --wg-glow-b: rgb(212 160 23 / 0.1);
-  --wg-glow-c: rgb(38 108 140 / 0.09);
+  /* Ambient backdrop (decorative only — never text).
+     Light mode keeps the warm-paper feel: the colour is a wash over paper,
+     not a light source, so the values stay low and the hues stay adjacent. */
+  --wg-ambient-1: rgb(11 107 96 / 0.22);
+  --wg-ambient-2: rgb(28 122 168 / 0.16);
+  --wg-ambient-3: rgb(212 160 23 / 0.14);
+  --wg-ambient-strength: 0.55;
+  --wg-grain-opacity: 0.035;
   --wg-grad-btn: linear-gradient(135deg, #0d7a6d 0%, #0b6b60 55%, #095c52 100%);
 
   /* Semantic tones (background / ink / border) — never color-only signals */
@@ -76,27 +80,35 @@
    once for system preference without an explicit light choice. Keep in sync. */
 
 :root[data-theme="dark"] {
-  --wg-canvas: #0d1312;
-  --wg-surface: #141b1a;
-  --wg-raised: #1a2321;
+  /* Deep blue-black rather than the previous green-black: it reads as night
+     rather than as a dimmed light theme, and gives the teal somewhere to
+     glow against. Surfaces step up in clear, even increments so cards read
+     as layers instead of smudges. */
+  --wg-canvas: #070a10;
+  --wg-surface: #0f131c;
+  --wg-raised: #161c27;
 
-  --wg-line: #253130;
-  --wg-line-strong: #3b4845;
+  --wg-line: #212938;
+  --wg-line-strong: #38435a;
 
-  --wg-ink: #e9edeb;
-  --wg-ink-muted: #a3b1ac;
-  --wg-ink-faint: #7e8c88;
+  --wg-ink: #eef2f9;
+  --wg-ink-muted: #a8b3c8;
+  --wg-ink-faint: #77839a;
 
-  --wg-primary: #3cc5b3;
-  --wg-primary-strong: #5cd6c6;
-  --wg-primary-contrast: #062720;
-  --wg-primary-soft: #123029;
-  --wg-primary-soft-ink: #7fdccd;
+  --wg-primary: #3ee0c7;
+  --wg-primary-strong: #63f0da;
+  --wg-primary-contrast: #04211d;
+  --wg-primary-soft: #0d332e;
+  --wg-primary-soft-ink: #7ff0dd;
 
-  --wg-glow-a: rgb(60 197 179 / 0.15);
-  --wg-glow-b: rgb(212 160 23 / 0.08);
-  --wg-glow-c: rgb(80 140 220 / 0.1);
-  --wg-grad-btn: linear-gradient(135deg, #46d2bf 0%, #3cc5b3 55%, #2eb3a2 100%);
+  /* Dark mode can afford real luminosity — the ambient layer is a light
+     source here, so a third hue is allowed to come through. */
+  --wg-ambient-1: rgb(62 224 199 / 0.26);
+  --wg-ambient-2: rgb(88 132 255 / 0.22);
+  --wg-ambient-3: rgb(180 104 255 / 0.16);
+  --wg-ambient-strength: 1;
+  --wg-grain-opacity: 0.05;
+  --wg-grad-btn: linear-gradient(135deg, #4ce8d0 0%, #3ee0c7 55%, #2bc9b0 100%);
 
   --wg-info-bg: #122833;
   --wg-info-ink: #9ccdea;
@@ -114,38 +126,40 @@
   --wg-danger-ink: #eba79e;
   --wg-danger-line: #663029;
 
-  --wg-focus: #4fd1c0;
+  --wg-focus: #5ceada;
 
-  --wg-shadow-1: 0 0 0 1px rgb(255 255 255 / 0.03);
-  --wg-shadow-2: 0 0 0 1px rgb(255 255 255 / 0.04), 0 12px 32px rgb(0 0 0 / 0.4);
-  --wg-shadow-glow: 0 0 0 1px rgb(60 197 179 / 0.3), 0 8px 30px rgb(60 197 179 / 0.12);
+  --wg-shadow-1: 0 0 0 1px rgb(255 255 255 / 0.04);
+  --wg-shadow-2: 0 0 0 1px rgb(255 255 255 / 0.05), 0 14px 38px rgb(0 0 0 / 0.55);
+  --wg-shadow-glow: 0 0 0 1px rgb(62 224 199 / 0.32), 0 8px 34px rgb(62 224 199 / 0.14);
 
   color-scheme: dark;
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --wg-canvas: #0d1312;
-    --wg-surface: #141b1a;
-    --wg-raised: #1a2321;
+    --wg-canvas: #070a10;
+    --wg-surface: #0f131c;
+    --wg-raised: #161c27;
 
-    --wg-line: #253130;
-    --wg-line-strong: #3b4845;
+    --wg-line: #212938;
+    --wg-line-strong: #38435a;
 
-    --wg-ink: #e9edeb;
-    --wg-ink-muted: #a3b1ac;
-    --wg-ink-faint: #7e8c88;
+    --wg-ink: #eef2f9;
+    --wg-ink-muted: #a8b3c8;
+    --wg-ink-faint: #77839a;
 
-    --wg-primary: #3cc5b3;
-    --wg-primary-strong: #5cd6c6;
-    --wg-primary-contrast: #062720;
-    --wg-primary-soft: #123029;
-    --wg-primary-soft-ink: #7fdccd;
+    --wg-primary: #3ee0c7;
+    --wg-primary-strong: #63f0da;
+    --wg-primary-contrast: #04211d;
+    --wg-primary-soft: #0d332e;
+    --wg-primary-soft-ink: #7ff0dd;
 
-    --wg-glow-a: rgb(60 197 179 / 0.15);
-    --wg-glow-b: rgb(212 160 23 / 0.08);
-    --wg-glow-c: rgb(80 140 220 / 0.1);
-    --wg-grad-btn: linear-gradient(135deg, #46d2bf 0%, #3cc5b3 55%, #2eb3a2 100%);
+    --wg-ambient-1: rgb(62 224 199 / 0.26);
+    --wg-ambient-2: rgb(88 132 255 / 0.22);
+    --wg-ambient-3: rgb(180 104 255 / 0.16);
+    --wg-ambient-strength: 1;
+    --wg-grain-opacity: 0.05;
+    --wg-grad-btn: linear-gradient(135deg, #4ce8d0 0%, #3ee0c7 55%, #2bc9b0 100%);
 
     --wg-info-bg: #122833;
     --wg-info-ink: #9ccdea;
@@ -163,11 +177,11 @@
     --wg-danger-ink: #eba79e;
     --wg-danger-line: #663029;
 
-    --wg-focus: #4fd1c0;
+    --wg-focus: #5ceada;
 
-    --wg-shadow-1: 0 0 0 1px rgb(255 255 255 / 0.03);
-    --wg-shadow-2: 0 0 0 1px rgb(255 255 255 / 0.04), 0 12px 32px rgb(0 0 0 / 0.4);
-    --wg-shadow-glow: 0 0 0 1px rgb(60 197 179 / 0.3), 0 8px 30px rgb(60 197 179 / 0.12);
+    --wg-shadow-1: 0 0 0 1px rgb(255 255 255 / 0.04);
+    --wg-shadow-2: 0 0 0 1px rgb(255 255 255 / 0.05), 0 14px 38px rgb(0 0 0 / 0.55);
+    --wg-shadow-glow: 0 0 0 1px rgb(62 224 199 / 0.32), 0 8px 34px rgb(62 224 199 / 0.14);
 
     color-scheme: dark;
   }

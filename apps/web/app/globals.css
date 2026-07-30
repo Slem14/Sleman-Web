@@ -99,15 +99,24 @@
 
 /* ------------------------------------------------ decorative atmosphere -- */
 
-/* Living aurora backdrop.
+/* Living backdrop.
  *
- * Three glow fields on long, prime-ish, offset cycles so the composition never
- * visibly repeats — the eye should register "alive" without ever catching a
- * loop. Purely decorative: every contrast ratio in the design is measured
- * against the flat --wg-canvas underneath, so the aurora can never make text
- * fail. Frozen entirely by the global prefers-reduced-motion rule.
+ * Not blobs. A single wide spectrum of colour is swept slowly around the
+ * viewport by rotation, so the light on the page genuinely changes without
+ * anything ever moving in a way the eye can track. Three layers:
+ *
+ *   1. the rotating spectrum — the light source
+ *   2. a counter-rotating band that breathes, so the composition never
+ *      repeats on the rotation period
+ *   3. static film grain, which is what stops large blurred gradients from
+ *      looking like cheap CSS and makes them read as a printed surface
+ *
+ * Purely decorative and behind everything. Every contrast ratio in the design
+ * is measured against the flat --wg-canvas underneath, so this layer can never
+ * push text below AA. Frozen by the global prefers-reduced-motion rule, which
+ * leaves a still, and still attractive, gradient.
  */
-.aurora {
+.ambient {
   position: fixed;
   inset: 0;
   z-index: -1;
@@ -115,88 +124,105 @@
   pointer-events: none;
   background: var(--wg-canvas);
 }
-.aurora span {
+
+.ambient span {
   position: absolute;
-  border-radius: 50%;
-  /* Large blur radii are expensive to repaint; promoting to its own layer
-     keeps the animation on the compositor and off the main thread. */
-  will-change: transform, opacity;
+  /* Large blur radii are expensive to repaint; promoting each layer keeps the
+     animation on the compositor and off the main thread. */
+  will-change: transform;
   transform: translateZ(0);
 }
-.aurora span:nth-child(1) {
-  width: 62vw;
-  height: 62vw;
-  min-width: 30rem;
-  min-height: 30rem;
-  top: -24vw;
-  inset-inline-start: -14vw;
-  background: radial-gradient(circle, var(--wg-glow-a), transparent 64%);
-  filter: blur(60px);
-  animation: wg-drift-a 41s ease-in-out infinite alternate;
-}
-.aurora span:nth-child(2) {
-  width: 52vw;
-  height: 52vw;
-  min-width: 26rem;
-  min-height: 26rem;
-  bottom: -22vw;
-  inset-inline-end: -12vw;
-  background: radial-gradient(circle, var(--wg-glow-b), transparent 64%);
-  filter: blur(70px);
-  animation: wg-drift-b 53s ease-in-out infinite alternate;
-}
-.aurora span:nth-child(3) {
-  width: 40vw;
-  height: 40vw;
-  min-width: 20rem;
-  min-height: 20rem;
-  top: 30%;
-  inset-inline-start: 45%;
-  background: radial-gradient(circle, var(--wg-glow-c), transparent 66%);
-  filter: blur(80px);
-  animation: wg-drift-c 67s ease-in-out infinite alternate;
+
+/* 1 — the rotating spectrum. Oversized so its edges never enter the viewport;
+   what shows is always the middle of the sweep. */
+.ambient span:nth-child(1) {
+  top: 50%;
+  inset-inline-start: 50%;
+  width: 170vmax;
+  height: 170vmax;
+  margin-top: -85vmax;
+  margin-inline-start: -85vmax;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    var(--wg-ambient-1) 55deg,
+    transparent 120deg,
+    var(--wg-ambient-2) 195deg,
+    transparent 255deg,
+    var(--wg-ambient-3) 310deg,
+    transparent 360deg
+  );
+  filter: blur(90px);
+  opacity: var(--wg-ambient-strength);
+  animation: wg-sweep 96s linear infinite;
 }
 
-@keyframes wg-drift-a {
+/* 2 — counter-rotating band on a coprime period, so layers 1 and 2 only
+   realign every ~40 minutes. This is what removes the sense of a loop. */
+.ambient span:nth-child(2) {
+  top: 50%;
+  inset-inline-start: 50%;
+  width: 150vmax;
+  height: 150vmax;
+  margin-top: -75vmax;
+  margin-inline-start: -75vmax;
+  background: conic-gradient(
+    from 90deg,
+    transparent 0deg,
+    var(--wg-ambient-2) 80deg,
+    transparent 180deg,
+    var(--wg-ambient-1) 260deg,
+    transparent 360deg
+  );
+  filter: blur(110px);
+  opacity: calc(var(--wg-ambient-strength) * 0.7);
+  animation: wg-sweep-reverse 149s linear infinite;
+}
+
+/* 3 — film grain. Static: animated noise is nauseating at full-viewport size
+   and costs a repaint every frame. */
+.ambient span:nth-child(3) {
+  inset: 0;
+  opacity: var(--wg-grain-opacity);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+  will-change: auto;
+}
+
+@keyframes wg-sweep {
   from {
-    transform: translate3d(0, 0, 0) scale(1);
-    opacity: 0.85;
-  }
-  50% {
-    transform: translate3d(16vw, 9vh, 0) scale(1.18);
-    opacity: 1;
+    transform: rotate(0deg);
   }
   to {
-    transform: translate3d(34vw, 2vh, 0) scale(0.94);
-    opacity: 0.8;
+    transform: rotate(360deg);
   }
 }
-@keyframes wg-drift-b {
+@keyframes wg-sweep-reverse {
   from {
-    transform: translate3d(0, 0, 0) scale(1.06);
-    opacity: 0.9;
+    transform: rotate(360deg) scale(1);
   }
   50% {
-    transform: translate3d(-18vw, -11vh, 0) scale(0.88);
-    opacity: 1;
+    transform: rotate(180deg) scale(1.12);
   }
   to {
-    transform: translate3d(-31vw, -3vh, 0) scale(1.22);
-    opacity: 0.85;
+    transform: rotate(0deg) scale(1);
   }
 }
-@keyframes wg-drift-c {
-  from {
-    transform: translate3d(0, 0, 0) scale(0.9);
-    opacity: 0.5;
-  }
-  50% {
-    transform: translate3d(-22vw, 14vh, 0) scale(1.25);
-    opacity: 0.9;
-  }
-  to {
-    transform: translate3d(12vw, -10vh, 0) scale(1);
-    opacity: 0.55;
+
+/* Shown only on devices that actually have a camera worth offering.
+ *
+ * `pointer: coarse` is the honest test: it asks whether the primary input is a
+ * finger, which is true of phones and tablets and false of laptops — including
+ * touchscreen laptops, whose primary pointer is still a trackpad. A webcam
+ * pointed at a letter produces an unreadable photo, so offering "take a photo"
+ * on a desktop is not a feature, it is a wrong turn. Doing this in CSS rather
+ * than JS keeps it correct in a static export, with no hydration flash.
+ */
+.touch-only {
+  display: none;
+}
+@media (pointer: coarse) {
+  .touch-only {
+    display: inline-flex;
   }
 }
 

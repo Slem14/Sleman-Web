@@ -25,7 +25,7 @@ export default function NotFound() {
     <html lang="en" dir="ltr" suppressHydrationWarning className={fontVariables}>
       <body className="min-h-dvh grid place-items-center p-6">
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
-        <div aria-hidden="true" className="aurora">
+        <div aria-hidden="true" className="ambient">
           <span />
           <span />
           <span />

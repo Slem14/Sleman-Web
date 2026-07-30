@@ -223,11 +223,15 @@ export function UploadFlow({
           className="sr-only"
         />
 
-        <div className="mt-5 grid gap-3 sm:grid-cols-2">
+        {/* Flex rather than a 2-column grid: the camera button is hidden on
+            pointer-fine devices, and the file button should then take the full
+            width instead of leaving an empty cell. */}
+        <div className="mt-5 flex flex-col sm:flex-row gap-3">
           <Button
             variant="secondary"
             size="lg"
             disabled={busy}
+            className="flex-1"
             onClick={() => fileInputRef.current?.click()}
           >
             <FileIcon />
@@ -237,6 +241,7 @@ export function UploadFlow({
             variant="secondary"
             size="lg"
             disabled={busy}
+            className="touch-only flex-1"
             onClick={() => cameraInputRef.current?.click()}
           >
             <CameraIcon />
@@ -244,7 +249,8 @@ export function UploadFlow({
           </Button>
         </div>
 
-        <p className="mt-4 text-sm text-ink-muted leading-relaxed">{m.photoTips}</p>
+        {/* Photo advice is only advice if photographing is on offer. */}
+        <p className="touch-only mt-4 text-sm text-ink-muted leading-relaxed">{m.photoTips}</p>
 
         {file !== null ? (
           <p className="mt-4 flex flex-wrap items-center gap-2 text-sm">

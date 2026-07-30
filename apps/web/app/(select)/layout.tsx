@@ -40,9 +40,8 @@ export default function SelectLayout({ children }: { children: ReactNode }) {
       <body className="min-h-dvh">
         {/* Apply persisted theme before anything paints (no flash). */}
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
-        {/* Three drifting glow fields. Spans rather than pseudo-elements so
-            each can carry its own cycle without fighting for ::before. */}
-        <div aria-hidden="true" className="aurora">
+        {/* Rotating light, counter-rotating band, film grain — see globals.css. */}
+        <div aria-hidden="true" className="ambient">
           <span />
           <span />
           <span />
