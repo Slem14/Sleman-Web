@@ -67,8 +67,11 @@
   }
 
   /* Visible focus everywhere, tokens-driven (WCAG 2.4.7 / 2.4.13). */
+  /* 3px rather than the 2px minimum. This product is used by people filling in
+     official forms under stress, often keyboard-only on a borrowed machine —
+     the focus ring is the thing that tells them where they are. */
   :focus-visible {
-    outline: 2px solid var(--wg-focus);
+    outline: 3px solid var(--wg-focus);
     outline-offset: 2px;
   }
 
@@ -122,7 +125,15 @@
   z-index: -1;
   overflow: hidden;
   pointer-events: none;
-  background: var(--wg-canvas);
+  /* Painted once and never animated, so all of this is free: a soft top-light
+     that gives the page a direction, over a vignette that darkens the far
+     corners. The vignette is doing real work rather than decoration — it pulls
+     the eye toward the centre column where the letter and its explanation
+     live, which matters on a page someone reads while anxious. */
+  background:
+    radial-gradient(120% 80% at 50% -10%, var(--wg-ambient-top), transparent 60%),
+    radial-gradient(140% 110% at 50% 50%, transparent 45%, var(--wg-vignette) 100%),
+    var(--wg-canvas);
 }
 
 /*
@@ -201,6 +212,39 @@
   }
 }
 
+/* Logo — the reading pass.
+ *
+ * The three fragments of the unread line brighten in sequence and settle, then
+ * the cycle restarts after a long pause. It should read as the app taking a
+ * moment to read the letter, not as a spinner: a mark that pulses constantly
+ * on a page about official post would feel like an alarm. Opacity only.
+ */
+@keyframes wg-frag-read {
+  0%,
+  12% {
+    opacity: 0.35;
+  }
+  22%,
+  46% {
+    opacity: 1;
+  }
+  62%,
+  100% {
+    opacity: 0.35;
+  }
+}
+.wg-frag-1,
+.wg-frag-2,
+.wg-frag-3 {
+  animation: wg-frag-read 5.5s ease-in-out infinite;
+}
+.wg-frag-2 {
+  animation-delay: 0.22s;
+}
+.wg-frag-3 {
+  animation-delay: 0.44s;
+}
+
 /* Shown only on devices that actually have a camera worth offering.
  *
  * `pointer: coarse` is the honest test: it asks whether the primary input is a
@@ -220,11 +264,12 @@
 }
 
 /* Content entrance: a short rise-and-fade, staggered by depth on the page.
-   Deliberately quick (450ms) — this is polish, not a loading screen. */
+   380ms and 10px — inside the "subtle" motion tier, where the movement reads
+   as a fade rather than a slide. This is polish, not a loading screen. */
 @keyframes wg-rise {
   from {
     opacity: 0;
-    transform: translateY(12px);
+    transform: translateY(10px);
   }
   to {
     opacity: 1;
@@ -232,7 +277,7 @@
   }
 }
 .rise {
-  animation: wg-rise 450ms cubic-bezier(0.22, 0.68, 0.24, 1) both;
+  animation: wg-rise 380ms cubic-bezier(0.22, 0.68, 0.24, 1) both;
 }
 .rise-1 {
   animation-delay: 60ms;

@@ -47,7 +47,6 @@ jobs:
           # do not guarantee the no-training promise the privacy notice makes.
           # Makes the upload page warn users. Remove once a reviewed provider
           # agreement is in place.
-          NEXT_PUBLIC_TEST_MODE: ${{ vars.NEXT_PUBLIC_TEST_MODE }}
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3

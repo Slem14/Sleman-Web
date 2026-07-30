@@ -1,16 +1,5 @@
-﻿import AxeBuilder from "@axe-core/playwright";
-import { expect, test, type Page } from "@playwright/test";
-
-/** Fail on serious/critical WCAG violations (axe-core, WCAG 2.x A+AA tags). */
-async function expectNoSeriousA11yViolations(page: Page) {
-  const results = await new AxeBuilder({ page })
-    .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"])
-    .analyze();
-  const serious = results.violations.filter(
-    (v) => v.impact === "serious" || v.impact === "critical",
-  );
-  expect(serious, JSON.stringify(serious, null, 2)).toEqual([]);
-}
+﻿import { expect, test } from "@playwright/test";
+import { expectNoSeriousA11yViolations } from "./a11y";
 
 test.describe("language selection", () => {
   test("shows both languages and passes a11y scan", async ({ page }) => {

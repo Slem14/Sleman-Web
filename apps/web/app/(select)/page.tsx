@@ -1,4 +1,5 @@
 import { UPCOMING_LANGUAGES } from "@wg/i18n";
+import { Logo } from "@wg/ui";
 import { ThemeToggle } from "../theme";
 import { LanguagePicker } from "./language-picker";
 import { LiveGreeting } from "./live-greeting";
@@ -12,7 +13,13 @@ export default function LanguageSelectPage() {
   return (
     <div className="min-h-dvh flex flex-col p-6">
       <main className="w-full max-w-5xl mx-auto flex-1 flex flex-col justify-center py-12">
-        <div className="rise rise-1">
+        {/* The mark carries the brand here: this page is language-agnostic by
+            design, so it cannot lean on a wordmark anyone must read. */}
+        <div className="rise rise-1 flex justify-center">
+          <Logo size={64} animated />
+        </div>
+
+        <div className="mt-8 rise rise-1">
           <LiveGreeting />
         </div>
 

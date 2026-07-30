@@ -10,3 +10,5 @@ export { LanguageCard } from "./LanguageCard";
 export type { LanguageCardProps } from "./LanguageCard";
 export { Badge } from "./Badge";
 export type { BadgeTone } from "./Badge";
+export { Logo } from "./Logo";
+export type { LogoProps } from "./Logo";

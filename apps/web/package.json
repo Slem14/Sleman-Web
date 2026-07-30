@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "logo": "node scripts/render-logo.mjs"
   },
   "dependencies": {
     "@wg/i18n": "workspace:*",

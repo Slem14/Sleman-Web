@@ -25,7 +25,8 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   themeColor: [
     { media: "(prefers-color-scheme: light)", color: "#faf8f4" },
-    { media: "(prefers-color-scheme: dark)", color: "#0d1312" },
+    // Tracks --wg-canvas in packages/ui/src/tokens.css.
+    { media: "(prefers-color-scheme: dark)", color: "#070a10" },
   ],
 };
 

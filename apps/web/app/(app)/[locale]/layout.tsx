@@ -1,5 +1,5 @@
 import { LOCALES, dir, getMessages, isLocale } from "@wg/i18n";
-import { Badge } from "@wg/ui";
+import { Logo } from "@wg/ui";
 import type { Metadata, Viewport } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -49,7 +49,10 @@ export async function generateMetadata({
 export const viewport: Viewport = {
   themeColor: [
     { media: "(prefers-color-scheme: light)", color: "#faf8f4" },
-    { media: "(prefers-color-scheme: dark)", color: "#0d1312" },
+    // Must track --wg-canvas in packages/ui/src/tokens.css — this is the colour
+    // the browser paints its own chrome with, so a stale value shows as a seam
+    // above the page on mobile.
+    { media: "(prefers-color-scheme: dark)", color: "#070a10" },
   ],
 };
 
@@ -87,14 +90,14 @@ export default async function LocaleLayout({
           <div className="mx-auto max-w-6xl px-6 py-3.5 flex items-center justify-between gap-4">
             <Link
               href={`/${locale}`}
-              className="font-mono text-sm font-bold uppercase tracking-[0.15em] text-ink hover:text-primary transition-colors"
+              className="group flex items-center gap-2.5 font-mono text-sm font-bold uppercase tracking-[0.15em] text-ink hover:text-primary transition-colors"
             >
-              Welcome<span className="text-primary"> Germany</span>
+              <Logo size={28} animated className="shrink-0" />
+              <span>
+                Welcome<span className="text-primary"> Germany</span>
+              </span>
             </Link>
             <div className="flex items-center gap-3">
-              <Badge tone="neutral" className="hidden sm:inline-block">
-                Beta
-              </Badge>
               <Link
                 href="/"
                 className="text-sm font-medium text-primary hover:text-primary-strong underline underline-offset-4"
@@ -129,9 +132,7 @@ export default async function LocaleLayout({
                 {m.footer.impressum}
               </Link>
             </nav>
-            <p className="mt-4 text-xs text-ink-muted">
-              {m.footer.notLegalAdvice} · {m.common.betaNotice}
-            </p>
+            <p className="mt-4 text-xs text-ink-muted">{m.footer.notLegalAdvice}</p>
           </div>
         </footer>
       </body>

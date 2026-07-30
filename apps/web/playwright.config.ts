@@ -2,6 +2,9 @@ import { defineConfig, devices } from "@playwright/test";
 
 export default defineConfig({
   testDir: "./e2e",
+  // Compiles every route once, sequentially, before the parallel suite starts.
+  // See e2e/global-setup.ts for why.
+  globalSetup: "./e2e/global-setup.ts",
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,

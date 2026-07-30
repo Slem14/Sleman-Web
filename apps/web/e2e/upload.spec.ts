@@ -1,21 +1,11 @@
-import AxeBuilder from "@axe-core/playwright";
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test } from "@playwright/test";
+import { expectNoSeriousA11yViolations } from "./a11y";
 import { PDF_BYTES, PNG_BYTES, TEXT_BYTES } from "./fixtures";
 
 /**
  * End-to-end coverage of the upload pipeline against the real API running
  * the stub provider — no AI, no cost, fully deterministic.
  */
-
-async function expectNoSeriousA11yViolations(page: Page) {
-  const results = await new AxeBuilder({ page })
-    .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"])
-    .analyze();
-  const serious = results.violations.filter(
-    (v) => v.impact === "serious" || v.impact === "critical",
-  );
-  expect(serious, JSON.stringify(serious, null, 2)).toEqual([]);
-}
 
 test.describe("upload flow — English", () => {
   test("uploads a letter and shows the explanation with evidence", async ({ page }) => {

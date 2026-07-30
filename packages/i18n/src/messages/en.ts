@@ -9,7 +9,6 @@ export const en = {
     tagline: "Understand your German letters — in your language.",
     continue: "Continue",
     back: "Back",
-    betaNotice: "Early preview — not yet open to the public.",
     languageSwitch: "Change language",
     skipToContent: "Skip to main content",
     themeToDark: "Switch to dark mode",
@@ -56,8 +55,6 @@ export const en = {
     ] as ReadonlyArray<string>,
     privacyMore: "Read the full privacy notice",
     uploadCta: "Understand my letter",
-    uploadComingSoon:
-      "Uploading opens in the next release. What you see today is an early preview.",
     seriousTitle: "Some letters need more than an app",
     seriousText:
       "For letters about courts, asylum decisions, deportation, or losing your home, we deliberately stay cautious and point you to qualified human help.",
@@ -143,16 +140,11 @@ export const en = {
       NETWORK: "We could not reach the service. Please check your internet connection.",
     },
     tryAgain: "Try again",
-    unavailableTitle: "Uploading is not switched on yet",
+    // Reached only when a build has no API origin configured, which is a
+    // deployment fault rather than a stage of the product.
+    unavailableTitle: "Uploading is temporarily unavailable",
     unavailableText:
-      "This preview does not include the analysis service yet. It is coming in the next release.",
-    // Shown whenever the live deployment runs on a free provider tier. The
-    // privacy notice promises no training on uploads; a free tier does not
-    // guarantee that, so the page must say so plainly rather than let the
-    // promise stand where it is not yet true.
-    testModeTitle: "Test version — please do not upload a real letter",
-    testModeText:
-      "This is an unfinished test. Letters sent here are analyzed by a free AI service, which may keep them and use them to improve its models. Please try it with a made-up letter, not with your real post. The full privacy protections described on this site apply from the public launch onwards.",
+      "We cannot reach the analysis service from here right now. Please try again shortly.",
   },
   privacyPage: {
     title: "Privacy Notice",
