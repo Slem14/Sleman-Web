@@ -29,9 +29,13 @@ services:
         value: 0.0.0.0
       - key: LOG_LEVEL
         value: info
-      # The exact browser origin allowed by CORS — deny-by-default (TB-1).
+      # The exact browser origins allowed by CORS — deny-by-default (TB-1).
+      # Both are listed only for the duration of the move to the new domain:
+      # DNS and the GitHub Pages custom domain do not switch at the same
+      # instant, and uploads must keep working from whichever origin is
+      # currently serving. Drop slemanparwiz.com once the move has settled.
       - key: WEB_ORIGIN
-        value: https://slemanparwiz.com
+        value: https://welcome-deutschland.de,https://slemanparwiz.com
       - key: ANALYSIS_PROVIDER
         value: gemini
       - key: ANALYSIS_MODEL
