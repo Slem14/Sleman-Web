@@ -125,62 +125,53 @@
   background: var(--wg-canvas);
 }
 
+/*
+ * PERFORMANCE CONTRACT for this layer — do not break these three rules:
+ *
+ *   1. NO `filter`. An earlier version blurred conic gradients at 170vmax,
+ *      which is a 7 MP raster surface and 28 MB of texture to draw a
+ *      background — 15x the viewport. Radial gradients are already smooth,
+ *      so the blur bought nothing that the gradient does not give for free.
+ *   2. NO animated `scale` or `width`/`height`. Scale changes force a fresh
+ *      rasterization every frame; translate and rotate reuse one texture.
+ *   3. Animate ONLY `transform` and `opacity` — the two properties the
+ *      compositor can handle without the main thread. Anything else here
+ *      means a repaint at viewport size, 60 times a second.
+ *
+ * The result costs one composite per frame and no raster work at all.
+ */
 .ambient span {
   position: absolute;
-  /* Large blur radii are expensive to repaint; promoting each layer keeps the
-     animation on the compositor and off the main thread. */
-  will-change: transform;
-  transform: translateZ(0);
+  /* Sized to the viewport, not to vmax, and only large enough that the drift
+     below never pulls an edge into view. */
+  inset: -25vh -25vw;
+  will-change: transform, opacity;
 }
 
-/* 1 — the rotating spectrum. Oversized so its edges never enter the viewport;
-   what shows is always the middle of the sweep. */
+/* 1 — the warm field. */
 .ambient span:nth-child(1) {
-  top: 50%;
-  inset-inline-start: 50%;
-  width: 170vmax;
-  height: 170vmax;
-  margin-top: -85vmax;
-  margin-inline-start: -85vmax;
-  background: conic-gradient(
-    from 0deg,
-    transparent 0deg,
-    var(--wg-ambient-1) 55deg,
-    transparent 120deg,
-    var(--wg-ambient-2) 195deg,
-    transparent 255deg,
-    var(--wg-ambient-3) 310deg,
-    transparent 360deg
-  );
-  filter: blur(90px);
+  background:
+    radial-gradient(42% 46% at 18% 22%, var(--wg-ambient-1), transparent 68%),
+    radial-gradient(38% 42% at 82% 28%, var(--wg-ambient-2), transparent 68%),
+    radial-gradient(46% 44% at 55% 88%, var(--wg-ambient-3), transparent 70%);
   opacity: var(--wg-ambient-strength);
-  animation: wg-sweep 96s linear infinite;
+  animation: wg-drift-1 71s ease-in-out infinite alternate;
 }
 
-/* 2 — counter-rotating band on a coprime period, so layers 1 and 2 only
-   realign every ~40 minutes. This is what removes the sense of a loop. */
+/* 2 — a second field on a coprime period, drifting the other way. Two slow
+   cycles that never realign are what make it read as alive; a single loop,
+   however long, eventually announces itself. */
 .ambient span:nth-child(2) {
-  top: 50%;
-  inset-inline-start: 50%;
-  width: 150vmax;
-  height: 150vmax;
-  margin-top: -75vmax;
-  margin-inline-start: -75vmax;
-  background: conic-gradient(
-    from 90deg,
-    transparent 0deg,
-    var(--wg-ambient-2) 80deg,
-    transparent 180deg,
-    var(--wg-ambient-1) 260deg,
-    transparent 360deg
-  );
-  filter: blur(110px);
-  opacity: calc(var(--wg-ambient-strength) * 0.7);
-  animation: wg-sweep-reverse 149s linear infinite;
+  background:
+    radial-gradient(44% 40% at 72% 68%, var(--wg-ambient-2), transparent 68%),
+    radial-gradient(36% 44% at 28% 76%, var(--wg-ambient-1), transparent 70%),
+    radial-gradient(40% 38% at 46% 8%, var(--wg-ambient-3), transparent 68%);
+  opacity: calc(var(--wg-ambient-strength) * 0.75);
+  animation: wg-drift-2 97s ease-in-out infinite alternate;
 }
 
-/* 3 — film grain. Static: animated noise is nauseating at full-viewport size
-   and costs a repaint every frame. */
+/* 3 — film grain. Static by design: animated noise repaints the whole
+   viewport every frame, and is unpleasant to look at besides. */
 .ambient span:nth-child(3) {
   inset: 0;
   opacity: var(--wg-grain-opacity);
@@ -188,23 +179,25 @@
   will-change: auto;
 }
 
-@keyframes wg-sweep {
+/* Translation only — no scale, so one rasterized texture serves every frame. */
+@keyframes wg-drift-1 {
   from {
-    transform: rotate(0deg);
+    transform: translate3d(-4%, -3%, 0) rotate(-4deg);
+    opacity: calc(var(--wg-ambient-strength) * 0.8);
   }
   to {
-    transform: rotate(360deg);
+    transform: translate3d(5%, 4%, 0) rotate(5deg);
+    opacity: var(--wg-ambient-strength);
   }
 }
-@keyframes wg-sweep-reverse {
+@keyframes wg-drift-2 {
   from {
-    transform: rotate(360deg) scale(1);
-  }
-  50% {
-    transform: rotate(180deg) scale(1.12);
+    transform: translate3d(4%, 3%, 0) rotate(3deg);
+    opacity: calc(var(--wg-ambient-strength) * 0.75);
   }
   to {
-    transform: rotate(0deg) scale(1);
+    transform: translate3d(-5%, -4%, 0) rotate(-4deg);
+    opacity: calc(var(--wg-ambient-strength) * 0.45);
   }
 }
 
@@ -287,8 +280,14 @@
   background-image: var(--wg-grad-btn);
 }
 
-/* Sticky translucent header */
+/* Sticky header.
+ *
+ * Deliberately NOT backdrop-filter. That property re-samples and blurs
+ * everything behind the element, and it cannot cache the result while the
+ * backdrop changes — with the ambient layer drifting behind it, the header
+ * would re-blur on every frame forever, not just while scrolling. A slightly
+ * more opaque surface reads almost identically and costs nothing.
+ */
 .header-blur {
-  background: color-mix(in srgb, var(--wg-surface) 82%, transparent);
-  backdrop-filter: blur(12px);
+  background: color-mix(in srgb, var(--wg-surface) 94%, transparent);
 }
