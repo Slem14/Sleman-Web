@@ -4,6 +4,8 @@ import type { Metadata, Viewport } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
+import { BottomAdSlot, SideAdSlot } from "../../ad-slots";
+import { AdSenseScript } from "../../ads";
 import { SITE_URL } from "../../site";
 import { fontVariables } from "../../fonts";
 import { THEME_INIT_SCRIPT, ThemeToggle } from "../../theme";
@@ -73,6 +75,9 @@ export default async function LocaleLayout({
 
   return (
     <html lang={locale} dir={dir(locale)} suppressHydrationWarning className={fontVariables}>
+      <head>
+        <AdSenseScript />
+      </head>
       <body className="min-h-dvh flex flex-col">
         {/* Apply persisted theme before anything paints (no flash). */}
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
@@ -112,9 +117,19 @@ export default async function LocaleLayout({
           </div>
         </header>
 
-        <main id="main" className="flex-1 w-full mx-auto max-w-6xl px-6 py-10">
-          {children}
-        </main>
+        {/* Side rail sits beside the content, never inside it. On anything
+            below xl the rail is hidden entirely rather than squeezing the
+            explanation into a narrow column. */}
+        <div className="flex-1 w-full mx-auto max-w-[calc(72rem+340px)] px-6 flex gap-8 justify-center">
+          <main id="main" className="flex-1 w-full max-w-6xl py-10 min-w-0">
+            {children}
+          </main>
+          <SideAdSlot slot="1" label={m.footer.notLegalAdvice} />
+        </div>
+
+        {/* Below the content: reached only once the reader has scrolled past
+            everything that actually matters. */}
+        <BottomAdSlot slot="2" label={m.footer.notLegalAdvice} />
 
         <footer className="border-t border-line bg-surface mt-16">
           <div className="mx-auto max-w-6xl px-6 py-8">

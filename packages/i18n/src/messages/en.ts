@@ -230,6 +230,7 @@ export const en = {
     title: "Impressum",
     placeholder:
       "Legal provider identification (Impressum) will be published here before public launch, as required by German law (§ 5 DDG).",
+    legalBasis: "Provider identification under § 5 DDG (Digitale-Dienste-Gesetz).",
   },
   footer: {
     privacy: "Privacy",
