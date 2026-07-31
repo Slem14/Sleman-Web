@@ -26,6 +26,7 @@ export type { QuestionAnswer, PriorExchange } from "./question-answer.js";
 
 export {
   MAX_FILE_BYTES,
+  MAX_FILES_PER_ANALYSIS,
   MAX_PDF_PAGES,
   MAX_IMAGE_PIXELS,
   ALLOWED_MIME_TYPES,

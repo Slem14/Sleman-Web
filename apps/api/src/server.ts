@@ -30,6 +30,8 @@ const REDACT_PATHS = [
 export interface WgRequestMeta {
   fileCategory?: string;
   fileSizeBucket?: string;
+  /** How many parts the letter arrived in — a count, never the files. */
+  fileCount?: number;
   outputLanguage?: string;
   provider?: string;
   /** How many claims the safety layer stripped — a count, never the content. */

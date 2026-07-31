@@ -58,8 +58,7 @@ async function main(): Promise<void> {
     console.log(`    expected: ${question.expect}`);
 
     const answer = await provider.answerQuestion({
-      fileBytes: pdf,
-      mimeType: "application/pdf",
+      files: [{ bytes: pdf, mimeType: "application/pdf" }],
       outputLanguage: "en",
       requestId: "ask-smoke",
       question: question.text,

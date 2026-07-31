@@ -79,6 +79,12 @@ export const en = {
     photoTips:
       "Tips for a good photo: lay the letter flat, use good light, and capture the whole page.",
     selectedFile: "Selected file",
+    // {n} is replaced with the count — kept as a placeholder so translators
+    // can put the number where their language needs it.
+    selectedFiles: "{n} files — read together as one letter",
+    multiPageNote:
+      "These are read together as one letter, in the order shown. Remove a page or add another before you continue.",
+    addAnotherFile: "Add another page",
     removeFile: "Remove",
     analyze: "Explain this letter",
     // Live-region messages announced to screen readers during processing.
@@ -127,6 +133,7 @@ export const en = {
       UNSUPPORTED_TYPE: "This file type is not supported. Please upload a PDF, JPG, PNG or WebP.",
       CORRUPT_FILE: "This file could not be read. Please try taking a new photo.",
       TOO_MANY_PAGES: "This document has too many pages. Please upload the relevant pages only.",
+      TOO_MANY_FILES: "That is more files than we can read at once. Please send fewer pages.",
       IMAGE_TOO_LARGE: "This image is too large. Please take a photo with a lower resolution.",
       INVALID_LANGUAGE: "Something went wrong with the language setting. Please reload the page.",
       NO_FILE: "No file was received. Please choose a file and try again.",

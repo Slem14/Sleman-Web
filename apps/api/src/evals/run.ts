@@ -150,8 +150,7 @@ async function main(): Promise<void> {
 
     try {
       const raw = await provider.analyze({
-        fileBytes: pdf,
-        mimeType: "application/pdf",
+        files: [{ bytes: pdf, mimeType: "application/pdf" }],
         outputLanguage: "en",
         requestId: `eval-${fixture.id}`,
       });

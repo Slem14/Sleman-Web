@@ -47,7 +47,88 @@ function multipartUpload(opts: {
   };
 }
 
+/** Multipart payload carrying several files under the same `file` field. */
+function multipartMultiUpload(opts: {
+  files: Array<{ bytes: Buffer; filename: string; contentType: string }>;
+  language?: string;
+}) {
+  const boundary = "----wgtestboundary";
+  const parts: Buffer[] = [];
+  if (opts.language !== undefined) {
+    parts.push(
+      Buffer.from(
+        `--${boundary}\r\nContent-Disposition: form-data; name="language"\r\n\r\n${opts.language}\r\n`,
+      ),
+    );
+  }
+  for (const file of opts.files) {
+    parts.push(
+      Buffer.from(
+        `--${boundary}\r\nContent-Disposition: form-data; name="file"; filename="${file.filename}"\r\n` +
+          `Content-Type: ${file.contentType}\r\n\r\n`,
+      ),
+      file.bytes,
+      Buffer.from("\r\n"),
+    );
+  }
+  parts.push(Buffer.from(`--${boundary}--\r\n`));
+  return {
+    payload: Buffer.concat(parts),
+    headers: { "content-type": `multipart/form-data; boundary=${boundary}` },
+  };
+}
+
 describe("POST /v1/analyses", () => {
+  it("accepts several files as the pages of ONE letter", async () => {
+    const app = await buildServer(testConfig);
+    const res = await app.inject({
+      method: "POST",
+      url: "/v1/analyses",
+      ...multipartMultiUpload({
+        language: "en",
+        files: [
+          { bytes: TINY_PNG, filename: "page1.png", contentType: "image/png" },
+          { bytes: TINY_PNG, filename: "page2.png", contentType: "image/png" },
+          { bytes: TINY_PDF, filename: "page3.pdf", contentType: "application/pdf" },
+        ],
+      }),
+    });
+
+    // One analysis for the whole set — not three, and not a rejection.
+    expect(res.statusCode).toBe(200);
+    expect(parseDocumentAnalysis(res.json())).not.toBeNull();
+    await app.close();
+  });
+
+  it("rejects a mixed set where one page is not a real document", async () => {
+    const app = await buildServer(testConfig);
+    const res = await app.inject({
+      method: "POST",
+      url: "/v1/analyses",
+      ...multipartMultiUpload({
+        language: "en",
+        files: [
+          { bytes: TINY_PNG, filename: "page1.png", contentType: "image/png" },
+          // Declared as PNG, actually not — magic bytes must catch it even
+          // when it is buried behind a valid first page.
+          {
+            bytes: Buffer.from("not an image at all"),
+            filename: "p2.png",
+            contentType: "image/png",
+          },
+        ],
+      }),
+    });
+
+    // The whole request fails rather than analysing page 1 alone: a partially
+    // read letter explained as if it were complete is the exact failure mode
+    // this product must never produce. Junk bytes match no magic number, so
+    // the type check rejects them before the corruption check is reached.
+    expect(res.statusCode).toBe(415);
+    expect(errorBody(res).error.code).toBe("UNSUPPORTED_TYPE");
+    await app.close();
+  });
+
   it("returns a schema-valid analysis for a valid PNG upload", async () => {
     const app = await buildServer(testConfig);
     const req = multipartUpload({

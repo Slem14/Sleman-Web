@@ -1,14 +1,18 @@
 import {
   parseDocumentAnalysis,
   parseQuestionAnswer,
-  type AllowedMimeType,
   type DocumentAnalysis,
   type QuestionAnswer,
 } from "@wg/validation";
 import { buildOutputContract } from "../anthropic/output-contract.js";
 import { PROMPT_VERSION, buildSystemPrompt } from "../anthropic/prompt.js";
 import { buildQuestionPrompt } from "../anthropic/question-prompt.js";
-import type { AnalysisInput, DocumentAnalysisProvider, QuestionInput } from "../types.js";
+import type {
+  AnalysisInput,
+  DocumentAnalysisProvider,
+  DocumentFile,
+  QuestionInput,
+} from "../types.js";
 import { ProviderError } from "../types.js";
 
 /**
@@ -91,11 +95,17 @@ export class GeminiProvider implements DocumentAnalysisProvider {
 
     let correction = "";
     for (let attempt = 0; attempt < 2; attempt += 1) {
+      // Plural wording when several files were sent, so the model is told
+      // explicitly that they are one letter rather than several.
+      const subject =
+        input.files.length > 1
+          ? `the attached German letter (${input.files.length} pages, in order)`
+          : "the attached German letter";
       const instruction =
         correction === ""
-          ? "Analyse the attached German letter and return the JSON object."
-          : `${correction}\n\nAnalyse the attached German letter again and return only the JSON object.`;
-      const raw = await this.callModel(system, input, instruction);
+          ? `Analyse ${subject} and return the JSON object.`
+          : `${correction}\n\nAnalyse ${subject} again and return only the JSON object.`;
+      const raw = await this.callModel(system, input.files, instruction);
       const analysis = parseDocumentAnalysis(extractJson(raw));
       if (analysis !== null) return analysis;
 
@@ -118,7 +128,7 @@ export class GeminiProvider implements DocumentAnalysisProvider {
       // concatenated into the system prompt — same separation as the letter.
       const raw = await this.callModel(
         system,
-        { fileBytes: input.fileBytes, mimeType: input.mimeType },
+        input.files,
         `${correction}The person asks: ${input.question}`,
       );
       const answer = parseQuestionAnswer(extractJson(raw));
@@ -134,10 +144,17 @@ export class GeminiProvider implements DocumentAnalysisProvider {
 
   private async callModel(
     system: string,
-    input: { fileBytes: Buffer; mimeType: AllowedMimeType },
+    files: DocumentFile[],
     instructionText: string,
   ): Promise<string> {
-    const instruction = instructionText;
+    // Every part of the letter goes into ONE user turn, in the order the
+    // reader arranged them, so the model treats them as one document rather
+    // than as unrelated images. A deadline on page 1 has to be able to attach
+    // itself to the form on page 2.
+    const documentParts = files.flatMap((file, index) => [
+      ...(files.length > 1 ? [{ text: `--- Page ${index + 1} of ${files.length} ---` }] : []),
+      { inline_data: { mime_type: file.mimeType, data: file.bytes.toString("base64") } },
+    ]);
 
     const body = {
       system_instruction: { parts: [{ text: system }] },
@@ -146,12 +163,7 @@ export class GeminiProvider implements DocumentAnalysisProvider {
           role: "user",
           // Document first, instruction second — same ordering as the other
           // adapter, so the two behave alike on identical fixtures.
-          parts: [
-            {
-              inline_data: { mime_type: input.mimeType, data: input.fileBytes.toString("base64") },
-            },
-            { text: instruction },
-          ],
+          parts: [...documentParts, { text: instructionText }],
         },
       ],
       generationConfig: {

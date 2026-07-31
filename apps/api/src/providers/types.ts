@@ -10,10 +10,24 @@ import type {
  * only — never on a concrete vendor SDK. Swapping providers is configuration,
  * not surgery, which keeps the provider-exit plan credible.
  */
-export interface AnalysisInput {
+/**
+ * One page or attachment of a single letter.
+ *
+ * Letters arrive as several files far more often than as one — a two-page
+ * Jobcenter decision photographed page by page, or a form stapled behind its
+ * cover letter. They are passed to the provider together and analysed as ONE
+ * document, because the parts only make sense read together: page 1 carries
+ * the deadline, page 2 the form it applies to.
+ */
+export interface DocumentFile {
   /** Raw document bytes — exists in memory only, never written to disk. */
-  fileBytes: Buffer;
+  bytes: Buffer;
   mimeType: AllowedMimeType;
+}
+
+export interface AnalysisInput {
+  /** All parts of one letter, in the order the reader arranged them. */
+  files: DocumentFile[];
   /** Locale the explanation must be written in ("en" | "prs"). */
   outputLanguage: string;
   /**
@@ -32,8 +46,7 @@ export interface AnalysisInput {
  * open, and the API stays stateless between requests.
  */
 export interface QuestionInput {
-  fileBytes: Buffer;
-  mimeType: AllowedMimeType;
+  files: DocumentFile[];
   outputLanguage: string;
   requestId: string;
   question: string;

@@ -12,6 +12,16 @@ export const MAX_FILE_BYTES = 15 * 1024 * 1024; // 15 MiB
 /** Maximum PDF pages — administrative letters are short; books are abuse. */
 export const MAX_PDF_PAGES = 20;
 
+/**
+ * Maximum files accepted as ONE letter.
+ *
+ * People photograph a multi-page letter page by page, or send a form together
+ * with the cover letter it belongs to. Ten covers that comfortably while still
+ * bounding what one request can cost — the parts are analysed together, so the
+ * whole set is held in memory and sent to the provider in a single call.
+ */
+export const MAX_FILES_PER_ANALYSIS = 10;
+
 /** Maximum image pixels (width × height) — caps decompression cost. */
 export const MAX_IMAGE_PIXELS = 50_000_000; // 50 MP
 
@@ -39,6 +49,7 @@ export const UPLOAD_ERROR_CODES = [
   "UNSUPPORTED_TYPE",
   "CORRUPT_FILE",
   "TOO_MANY_PAGES",
+  "TOO_MANY_FILES",
   "IMAGE_TOO_LARGE",
   "INVALID_LANGUAGE",
   "NO_FILE",

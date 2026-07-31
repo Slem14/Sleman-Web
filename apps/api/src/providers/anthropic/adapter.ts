@@ -2,7 +2,6 @@ import Anthropic from "@anthropic-ai/sdk";
 import {
   parseDocumentAnalysis,
   parseQuestionAnswer,
-  type AllowedMimeType,
   type DocumentAnalysis,
   type QuestionAnswer,
 } from "@wg/validation";
@@ -10,7 +9,12 @@ import { getModelProfile, type ModelProfile } from "./model-profiles.js";
 import { buildOutputContract } from "./output-contract.js";
 import { PROMPT_VERSION, buildSystemPrompt } from "./prompt.js";
 import { buildQuestionPrompt } from "./question-prompt.js";
-import type { AnalysisInput, DocumentAnalysisProvider, QuestionInput } from "../types.js";
+import type {
+  AnalysisInput,
+  DocumentAnalysisProvider,
+  DocumentFile,
+  QuestionInput,
+} from "../types.js";
 import { ProviderError } from "../types.js";
 
 export interface AnthropicProviderOptions {
@@ -69,7 +73,7 @@ export class AnthropicProvider implements DocumentAnalysisProvider {
 
   async analyze(input: AnalysisInput): Promise<DocumentAnalysis> {
     const system = `${buildSystemPrompt(input.outputLanguage)}\n\n${buildOutputContract()}`;
-    const documentBlock = this.buildDocumentBlock(input);
+    const documentBlocks = this.buildDocumentBlocks(input);
 
     // First attempt, then at most one corrective retry. The retry re-sends the
     // same document with the validation failure appended — it never lowers the
@@ -80,7 +84,7 @@ export class AnthropicProvider implements DocumentAnalysisProvider {
         lastFailure === ""
           ? "Analyse the attached German letter and return the JSON object."
           : `${lastFailure}\n\nAnalyse the attached German letter again and return only the JSON object.`;
-      const raw = await this.callModel(system, documentBlock, instruction);
+      const raw = await this.callModel(system, documentBlocks, instruction);
       const analysis = parseDocumentAnalysis(extractJson(raw));
 
       if (analysis !== null) return analysis;
@@ -99,7 +103,7 @@ export class AnthropicProvider implements DocumentAnalysisProvider {
 
   async answerQuestion(input: QuestionInput): Promise<QuestionAnswer> {
     const system = buildQuestionPrompt(input.outputLanguage, input.history);
-    const documentBlock = this.buildDocumentBlock(input);
+    const documentBlocks = this.buildDocumentBlocks(input);
 
     let correction = "";
     for (let attempt = 0; attempt < 2; attempt += 1) {
@@ -107,7 +111,7 @@ export class AnthropicProvider implements DocumentAnalysisProvider {
       // the system prompt — the same separation that protects the letter.
       const raw = await this.callModel(
         system,
-        documentBlock,
+        documentBlocks,
         `${correction}The person asks: ${input.question}`,
       );
       const answer = parseQuestionAnswer(extractJson(raw));
@@ -121,29 +125,33 @@ export class AnthropicProvider implements DocumentAnalysisProvider {
     throw new ProviderError("invalid_output", "answer did not satisfy the schema");
   }
 
-  /** Wraps the document bytes in the content block its type requires. */
-  private buildDocumentBlock(input: {
-    fileBytes: Buffer;
-    mimeType: AllowedMimeType;
-  }): Anthropic.ContentBlockParam {
-    const data = input.fileBytes.toString("base64");
+  /**
+   * Wraps every part of the letter in the content block its type requires.
+   *
+   * Multi-part letters are labelled with their page position so the model
+   * treats them as one ordered document — a deadline on page 1 must be able
+   * to refer to the form on page 2.
+   */
+  private buildDocumentBlocks(input: { files: DocumentFile[] }): Anthropic.ContentBlockParam[] {
+    return input.files.flatMap((file, index) => {
+      const data = file.bytes.toString("base64");
+      const label: Anthropic.ContentBlockParam[] =
+        input.files.length > 1
+          ? [{ type: "text", text: `--- Page ${index + 1} of ${input.files.length} ---` }]
+          : [];
 
-    if (input.mimeType === "application/pdf") {
-      return {
-        type: "document",
-        source: { type: "base64", media_type: "application/pdf", data },
-      };
-    }
+      const block: Anthropic.ContentBlockParam =
+        file.mimeType === "application/pdf"
+          ? { type: "document", source: { type: "base64", media_type: "application/pdf", data } }
+          : { type: "image", source: { type: "base64", media_type: file.mimeType, data } };
 
-    return {
-      type: "image",
-      source: { type: "base64", media_type: input.mimeType, data },
-    };
+      return [...label, block];
+    });
   }
 
   private async callModel(
     system: string,
-    documentBlock: Anthropic.ContentBlockParam,
+    documentBlocks: Anthropic.ContentBlockParam[],
     instruction: string,
   ): Promise<string> {
     try {
@@ -163,7 +171,7 @@ export class AnthropicProvider implements DocumentAnalysisProvider {
               role: "user",
               // Document first, instruction second: the model reads the
               // material before it reads what to do with it.
-              content: [documentBlock, { type: "text", text: instruction }],
+              content: [...documentBlocks, { type: "text", text: instruction }],
             },
           ],
         },

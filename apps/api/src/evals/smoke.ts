@@ -78,8 +78,7 @@ async function main(): Promise<void> {
 
   const started = Date.now();
   const raw = await provider.analyze({
-    fileBytes: pdf,
-    mimeType: "application/pdf",
+    files: [{ bytes: pdf, mimeType: "application/pdf" }],
     outputLanguage: "en",
     requestId: "smoke-test",
   });

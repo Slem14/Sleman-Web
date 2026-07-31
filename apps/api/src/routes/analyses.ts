@@ -1,8 +1,13 @@
-import { MAX_FILE_BYTES, type UploadErrorCode } from "@wg/validation";
+import { MAX_FILES_PER_ANALYSIS, type UploadErrorCode } from "@wg/validation";
 import type { FastifyInstance } from "fastify";
 import type { ApiConfig } from "../config.js";
+import { collectFiles } from "../files/collect-files.js";
 import { validateUpload } from "../files/validate-upload.js";
-import { ProviderError, type DocumentAnalysisProvider } from "../providers/types.js";
+import {
+  ProviderError,
+  type DocumentAnalysisProvider,
+  type DocumentFile,
+} from "../providers/types.js";
 import { applyPostChecks } from "../safety/post-checks.js";
 import { applyRiskEscalation } from "../safety/risk-classifier.js";
 
@@ -26,6 +31,7 @@ const ERROR_STATUS: Record<UploadErrorCode, number> = {
   CORRUPT_FILE: 422,
   FILE_TOO_LARGE: 413,
   TOO_MANY_PAGES: 422,
+  TOO_MANY_FILES: 422,
   IMAGE_TOO_LARGE: 422,
   INVALID_LANGUAGE: 400,
   RATE_LIMITED: 429,
@@ -67,35 +73,37 @@ export function registerAnalysesRoute(
         reply.status(ERROR_STATUS[code]).send({ error: { code } });
 
       // ---- 1. Read the multipart upload fully into memory (never disk). --
-      const part = await request.file({
-        limits: { fileSize: MAX_FILE_BYTES, files: 1, fields: 4 },
-      });
-      if (!part) return fail("NO_FILE");
-
-      let fileBytes: Buffer;
-      try {
-        fileBytes = await part.toBuffer();
-      } catch {
-        // @fastify/multipart throws when the stream exceeds the size limit.
-        return fail("FILE_TOO_LARGE");
-      }
+      // A letter is frequently several files: pages photographed one by one,
+      // or a form behind its cover letter. They are analysed together as one
+      // document, so the parts can refer to each other.
+      const collected = await collectFiles(request, MAX_FILES_PER_ANALYSIS);
+      if (collected.error !== null) return fail(collected.error);
+      const { files, fields } = collected;
+      if (files.length === 0) return fail("NO_FILE");
 
       try {
-        // ---- 2. Language field (attached alongside the file). ------------
-        const languageField = part.fields["language"];
-        const language =
-          languageField && "value" in languageField ? String(languageField.value) : "";
+        // ---- 2. Language field (attached alongside the files). -----------
+        const language = fields["language"] ?? "";
         if (!OUTPUT_LANGUAGES.has(language)) return fail("INVALID_LANGUAGE");
 
-        // ---- 3. Strict file validation (magic bytes, limits). ------------
-        const verdict = validateUpload(fileBytes, part.mimetype);
-        if (!verdict.ok) return fail(verdict.errorCode);
+        // ---- 3. Strict validation of EVERY part (magic bytes, limits). ---
+        // One bad page fails the whole request: a partial letter would be
+        // explained as if it were complete, which is exactly the kind of
+        // confident-but-wrong answer this product must never give.
+        const validated: DocumentFile[] = [];
+        for (const file of files) {
+          const verdict = validateUpload(file.bytes, file.mimeType);
+          if (!verdict.ok) return fail(verdict.errorCode);
+          validated.push({ bytes: file.bytes, mimeType: verdict.mimeType });
+        }
 
         // Operational metadata for the C2 log event — buckets only, never
         // exact values that could fingerprint a document.
+        const totalBytes = validated.reduce((sum, f) => sum + f.bytes.length, 0);
         request.wgMeta = {
-          fileCategory: verdict.mimeType === "application/pdf" ? "pdf" : "image",
-          fileSizeBucket: `${Math.ceil(fileBytes.length / 1_000_000)}MB`,
+          fileCategory: validated.every((f) => f.mimeType === "application/pdf") ? "pdf" : "image",
+          fileSizeBucket: `${Math.ceil(totalBytes / 1_000_000)}MB`,
+          fileCount: validated.length,
           outputLanguage: language,
           provider: provider.name,
         };
@@ -103,8 +111,7 @@ export function registerAnalysesRoute(
         // ---- 4. Analyze via the configured provider. ----------------------
         try {
           const raw = await provider.analyze({
-            fileBytes,
-            mimeType: verdict.mimeType,
+            files: validated,
             outputLanguage: language,
             requestId: request.id,
           });
@@ -133,9 +140,10 @@ export function registerAnalysesRoute(
         }
       } finally {
         // ---- 5. Disposal on EVERY exit path (success, error, throw). ------
-        // Node's GC reclaims the buffer; zeroing first is defense in depth so
+        // Node's GC reclaims the buffers; zeroing first is defense in depth so
         // document bytes do not linger in reusable memory (master-spec §16).
-        fileBytes.fill(0);
+        // Every page is wiped, including any read before a later one failed.
+        for (const file of files) file.bytes.fill(0);
       }
     },
   );

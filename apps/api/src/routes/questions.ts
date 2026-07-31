@@ -1,5 +1,5 @@
 import {
-  MAX_FILE_BYTES,
+  MAX_FILES_PER_ANALYSIS,
   MAX_PRIOR_EXCHANGES,
   MAX_QUESTION_LENGTH,
   priorExchangeSchema,
@@ -9,8 +9,13 @@ import {
 import type { FastifyInstance } from "fastify";
 import { z } from "zod";
 import type { ApiConfig } from "../config.js";
+import { collectFiles } from "../files/collect-files.js";
 import { validateUpload } from "../files/validate-upload.js";
-import { ProviderError, type DocumentAnalysisProvider } from "../providers/types.js";
+import {
+  ProviderError,
+  type DocumentAnalysisProvider,
+  type DocumentFile,
+} from "../providers/types.js";
 
 const OUTPUT_LANGUAGES = new Set(["en", "prs"]);
 
@@ -22,6 +27,7 @@ const ERROR_STATUS: Record<UploadErrorCode, number> = {
   CORRUPT_FILE: 422,
   FILE_TOO_LARGE: 413,
   TOO_MANY_PAGES: 422,
+  TOO_MANY_FILES: 422,
   IMAGE_TOO_LARGE: 422,
   INVALID_LANGUAGE: 400,
   RATE_LIMITED: 429,
@@ -66,23 +72,16 @@ export function registerQuestionsRoute(
       const fail = (code: UploadErrorCode) =>
         reply.status(ERROR_STATUS[code]).send({ error: { code } });
 
-      const part = await request.file({
-        limits: { fileSize: MAX_FILE_BYTES, files: 1, fields: 6 },
-      });
-      if (!part) return fail("NO_FILE");
-
-      let fileBytes: Buffer;
-      try {
-        fileBytes = await part.toBuffer();
-      } catch {
-        return fail("FILE_TOO_LARGE");
-      }
+      // The browser re-sends every part of the letter with each question, plus
+      // any page the reader has added since — which is how someone can attach
+      // page 2 mid-conversation without the server ever holding page 1.
+      const collected = await collectFiles(request, MAX_FILES_PER_ANALYSIS);
+      if (collected.error !== null) return fail(collected.error);
+      const { files, fields } = collected;
+      if (files.length === 0) return fail("NO_FILE");
 
       try {
-        const fieldValue = (name: string): string => {
-          const field = part.fields[name];
-          return field && "value" in field ? String(field.value) : "";
-        };
+        const fieldValue = (name: string): string => fields[name] ?? "";
 
         const language = fieldValue("language");
         if (!OUTPUT_LANGUAGES.has(language)) return fail("INVALID_LANGUAGE");
@@ -106,12 +105,18 @@ export function registerQuestionsRoute(
           }
         }
 
-        const verdict = validateUpload(fileBytes, part.mimetype);
-        if (!verdict.ok) return fail(verdict.errorCode);
+        const validated: DocumentFile[] = [];
+        for (const file of files) {
+          const verdict = validateUpload(file.bytes, file.mimeType);
+          if (!verdict.ok) return fail(verdict.errorCode);
+          validated.push({ bytes: file.bytes, mimeType: verdict.mimeType });
+        }
 
+        const totalBytes = validated.reduce((sum, f) => sum + f.bytes.length, 0);
         request.wgMeta = {
-          fileCategory: verdict.mimeType === "application/pdf" ? "pdf" : "image",
-          fileSizeBucket: `${Math.ceil(fileBytes.length / 1_000_000)}MB`,
+          fileCategory: validated.every((f) => f.mimeType === "application/pdf") ? "pdf" : "image",
+          fileSizeBucket: `${Math.ceil(totalBytes / 1_000_000)}MB`,
+          fileCount: validated.length,
           outputLanguage: language,
           provider: provider.name,
           // The count only — never the questions themselves (C2 discipline).
@@ -120,8 +125,7 @@ export function registerQuestionsRoute(
 
         try {
           const answer = await provider.answerQuestion({
-            fileBytes,
-            mimeType: verdict.mimeType,
+            files: validated,
             outputLanguage: language,
             requestId: request.id,
             question,
@@ -140,7 +144,7 @@ export function registerQuestionsRoute(
         }
       } finally {
         // Disposal on every exit path, exactly as on the analysis route.
-        fileBytes.fill(0);
+        for (const file of files) file.bytes.fill(0);
       }
     },
   );

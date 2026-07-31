@@ -95,8 +95,7 @@ function buildProvider(fetchImpl: typeof fetch) {
 }
 
 const pdfInput = {
-  fileBytes: TINY_PDF,
-  mimeType: "application/pdf" as const,
+  files: [{ bytes: TINY_PDF, mimeType: "application/pdf" as const }],
   outputLanguage: "en",
   requestId: "req-test",
 };
@@ -130,7 +129,10 @@ describe("AnthropicProvider", () => {
 
   it("sends images as image blocks", async () => {
     const { impl, calls } = fakeFetch([{ body: messageResponse(validAnalysisJson()) }]);
-    await buildProvider(impl).analyze({ ...pdfInput, fileBytes: TINY_PNG, mimeType: "image/png" });
+    await buildProvider(impl).analyze({
+      ...pdfInput,
+      files: [{ bytes: TINY_PNG, mimeType: "image/png" }],
+    });
 
     const body = calls[0]!.body as { messages: Array<{ content: Array<{ type: string }> }> };
     expect(body.messages[0]!.content[0]!.type).toBe("image");

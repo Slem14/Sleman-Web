@@ -3,6 +3,7 @@
 import type { Locale, Messages } from "@wg/i18n";
 import {
   MAX_FILE_BYTES,
+  MAX_FILES_PER_ANALYSIS,
   isAllowedMimeType,
   parseDocumentAnalysis,
   type DocumentAnalysis,
@@ -55,7 +56,7 @@ export function UploadFlow({
   m: UploadMessages;
 }) {
   const [phase, setPhase] = useState<Phase>("idle");
-  const [file, setFile] = useState<File | null>(null);
+  const [files, setFiles] = useState<File[]>([]);
   const [errorKey, setErrorKey] = useState<ErrorKey | null>(null);
   const [analysis, setAnalysis] = useState<DocumentAnalysis | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -71,7 +72,7 @@ export function UploadFlow({
    */
   const reset = () => {
     setPhase("idle");
-    setFile(null);
+    setFiles([]);
     setErrorKey(null);
     setAnalysis(null);
     if (fileInputRef.current) fileInputRef.current.value = "";
@@ -83,37 +84,54 @@ export function UploadFlow({
     setPhase("error");
   };
 
+  /**
+   * Adds the chosen files to the set, rather than replacing it.
+   *
+   * Appending is what makes a multi-page letter workable: a phone camera can
+   * only capture one page per trip, so each trip has to add to what is already
+   * there. The input is cleared afterwards so choosing the same file twice
+   * still fires a change event.
+   */
   const onFileChosen = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const chosen = event.target.files?.[0] ?? null;
+    const chosen = Array.from(event.target.files ?? []);
+    event.target.value = "";
     setErrorKey(null);
-    if (chosen === null) {
-      setFile(null);
+    if (chosen.length === 0) return;
+
+    if (files.length + chosen.length > MAX_FILES_PER_ANALYSIS) {
+      failWith("TOO_MANY_FILES");
       return;
     }
     // Client-side pre-checks exist only for fast, friendly feedback. The API
     // repeats every check authoritatively — the browser is never trusted.
-    if (chosen.size > MAX_FILE_BYTES) {
-      setFile(null);
-      failWith("FILE_TOO_LARGE");
-      return;
+    for (const candidate of chosen) {
+      if (candidate.size > MAX_FILE_BYTES) {
+        failWith("FILE_TOO_LARGE");
+        return;
+      }
+      if (!isAllowedMimeType(candidate.type)) {
+        failWith("UNSUPPORTED_TYPE");
+        return;
+      }
     }
-    if (!isAllowedMimeType(chosen.type)) {
-      setFile(null);
-      failWith("UNSUPPORTED_TYPE");
-      return;
-    }
-    setFile(chosen);
+    setFiles((current) => [...current, ...chosen]);
     setPhase("idle");
   };
 
+  /** Removes one page without disturbing the order of the rest. */
+  const removeFile = (index: number) => {
+    setErrorKey(null);
+    setFiles((current) => current.filter((_, i) => i !== index));
+  };
+
   const submit = async () => {
-    if (file === null) return;
+    if (files.length === 0) return;
     setPhase("checking");
     setErrorKey(null);
 
     const body = new FormData();
     body.append("language", locale);
-    body.append("file", file, file.name);
+    for (const file of files) body.append("file", file, file.name);
 
     try {
       setPhase("uploading");
@@ -170,7 +188,7 @@ export function UploadFlow({
         apiBaseUrl={apiBaseUrl}
         // Kept in memory so follow-up questions can re-send it; cleared by
         // reset(), which is what makes "delete" actually delete.
-        file={file}
+        files={files}
         onReset={reset}
         liveMessage={liveMessage}
       />
@@ -208,6 +226,7 @@ export function UploadFlow({
           name="file"
           type="file"
           accept="application/pdf,image/jpeg,image/png,image/webp"
+          multiple
           onChange={onFileChosen}
           disabled={busy}
           className="sr-only"
@@ -218,6 +237,7 @@ export function UploadFlow({
           type="file"
           accept="image/*"
           capture="environment"
+          multiple
           onChange={onFileChosen}
           disabled={busy}
           className="sr-only"
@@ -252,28 +272,48 @@ export function UploadFlow({
         {/* Photo advice is only advice if photographing is on offer. */}
         <p className="touch-only mt-4 text-sm text-ink-muted leading-relaxed">{m.photoTips}</p>
 
-        {file !== null ? (
-          <p className="mt-4 flex flex-wrap items-center gap-2 text-sm">
-            <span className="text-ink-muted">{m.selectedFile}:</span>
-            {/* dir=ltr: filenames are not translated and must not be mirrored
-                inside an RTL layout. */}
-            <span dir="ltr" className="font-mono text-ink break-all">
-              {file.name}
-            </span>
-            <button
-              type="button"
-              onClick={reset}
-              disabled={busy}
-              className="text-primary underline underline-offset-4 hover:text-primary-strong"
-            >
-              {m.removeFile}
-            </button>
-          </p>
+        {files.length > 0 ? (
+          <div className="mt-5">
+            <p className="text-sm font-medium text-ink">
+              {files.length === 1
+                ? m.selectedFile
+                : m.selectedFiles.replace("{n}", `${files.length}`)}
+            </p>
+            {/* Numbered, because order is meaning: the model is told these are
+                pages 1..n of one letter, so what the reader sees here has to
+                match what gets sent. */}
+            <ol className="mt-2 space-y-2">
+              {files.map((f, index) => (
+                <li
+                  key={`${f.name}-${f.lastModified}-${index}`}
+                  className="flex items-center gap-3 rounded-md border border-line bg-raised px-3 py-2 text-sm"
+                >
+                  <span className="font-mono text-xs text-ink-muted shrink-0">{index + 1}</span>
+                  {/* dir=ltr: filenames are not translated and must not be
+                      mirrored inside an RTL layout. */}
+                  <span dir="ltr" className="font-mono text-ink break-all grow min-w-0">
+                    {f.name}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => removeFile(index)}
+                    disabled={busy}
+                    className="shrink-0 text-primary underline underline-offset-4 hover:text-primary-strong"
+                  >
+                    {m.removeFile}
+                  </button>
+                </li>
+              ))}
+            </ol>
+            {files.length > 1 ? (
+              <p className="mt-2 text-sm text-ink-muted leading-relaxed">{m.multiPageNote}</p>
+            ) : null}
+          </div>
         ) : null}
       </Card>
 
       <div className="flex flex-wrap items-center gap-4">
-        <Button size="lg" onClick={() => void submit()} disabled={file === null || busy}>
+        <Button size="lg" onClick={() => void submit()} disabled={files.length === 0 || busy}>
           {busy ? m.stateAnalyzing : m.analyze}
         </Button>
         {busy ? <p className="text-sm text-ink-muted">{m.processingNote}</p> : null}

@@ -24,7 +24,7 @@ export function AnalysisResult({
   m,
   locale,
   apiBaseUrl,
-  file,
+  files,
   onReset,
   liveMessage,
 }: {
@@ -32,7 +32,7 @@ export function AnalysisResult({
   m: UploadMessages;
   locale: Locale;
   apiBaseUrl: string;
-  file: File | null;
+  files: File[];
   onReset: () => void;
   liveMessage: string;
 }) {
@@ -190,8 +190,8 @@ export function AnalysisResult({
 
       {/* Follow-up questions need the original file, which lives only in
           browser memory — hence the null guard rather than a fetch. */}
-      {file !== null ? (
-        <AskPanel apiBaseUrl={apiBaseUrl} locale={locale} file={file} m={m} />
+      {files.length > 0 ? (
+        <AskPanel apiBaseUrl={apiBaseUrl} locale={locale} files={files} m={m} />
       ) : null}
 
       {/* AI transparency travels with the result, never buried in terms. */}

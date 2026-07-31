@@ -2,8 +2,11 @@
 
 import type { Locale, Messages } from "@wg/i18n";
 import {
+  MAX_FILE_BYTES,
+  MAX_FILES_PER_ANALYSIS,
   MAX_PRIOR_EXCHANGES,
   MAX_QUESTION_LENGTH,
+  isAllowedMimeType,
   parseQuestionAnswer,
   type PriorExchange,
   type QuestionAnswer,
@@ -29,12 +32,12 @@ interface Exchange extends PriorExchange {
 export function AskPanel({
   apiBaseUrl,
   locale,
-  file,
+  files,
   m,
 }: {
   apiBaseUrl: string;
   locale: Locale;
-  file: File;
+  files: File[];
   m: UploadMessages;
 }) {
   const [question, setQuestion] = useState("");
@@ -42,8 +45,42 @@ export function AskPanel({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const answersEndRef = useRef<HTMLDivElement>(null);
+  const extraInputRef = useRef<HTMLInputElement>(null);
+  /**
+   * Pages added during the conversation.
+   *
+   * People routinely discover mid-conversation that the answer is on a page
+   * they did not send — the second sheet, or the form referenced by the first.
+   * These are appended to the original set and travel with every subsequent
+   * question, so the model always sees the whole letter rather than a
+   * fragment. They live here in browser memory only, like the originals.
+   */
+  const [addedFiles, setAddedFiles] = useState<File[]>([]);
+  const allFiles = [...files, ...addedFiles];
 
   const atLimit = exchanges.length >= MAX_PRIOR_EXCHANGES;
+
+  const onExtraFileChosen = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const chosen = Array.from(event.target.files ?? []);
+    event.target.value = "";
+    if (chosen.length === 0) return;
+    if (allFiles.length + chosen.length > MAX_FILES_PER_ANALYSIS) {
+      setError(m.errors.TOO_MANY_FILES);
+      return;
+    }
+    for (const candidate of chosen) {
+      if (candidate.size > MAX_FILE_BYTES) {
+        setError(m.errors.FILE_TOO_LARGE);
+        return;
+      }
+      if (!isAllowedMimeType(candidate.type)) {
+        setError(m.errors.UNSUPPORTED_TYPE);
+        return;
+      }
+    }
+    setError(null);
+    setAddedFiles((current) => [...current, ...chosen]);
+  };
 
   const ask = async () => {
     const trimmed = question.trim();
@@ -64,7 +101,10 @@ export function AskPanel({
       "history",
       JSON.stringify(exchanges.map((e) => ({ question: e.question, answer: e.answer }))),
     );
-    body.append("file", file, file.name);
+    // Every page travels with every question — including any added since the
+    // analysis. The server holds nothing, so the browser must supply the whole
+    // letter each time.
+    for (const file of allFiles) body.append("file", file, file.name);
 
     try {
       const response = await fetch(`${apiBaseUrl}/v1/questions`, { method: "POST", body });
@@ -174,14 +214,60 @@ export function AskPanel({
             placeholder={m.askPlaceholder}
             className="w-full rounded-md border border-line bg-surface p-3 text-ink placeholder:text-ink-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus disabled:opacity-50"
           />
-          <div className="mt-3 flex items-center gap-3">
+          {/* Visually hidden but still a real, labelled control: it is driven
+              by the button below, and a screen reader must still be able to
+              name it. */}
+          <input
+            ref={extraInputRef}
+            id="follow-up-file"
+            type="file"
+            aria-label={m.addAnotherFile}
+            accept="application/pdf,image/jpeg,image/png,image/webp"
+            multiple
+            onChange={onExtraFileChosen}
+            disabled={busy}
+            className="sr-only"
+          />
+          <div className="mt-3 flex flex-wrap items-center gap-3">
             <Button onClick={() => void ask()} disabled={busy}>
               {busy ? m.askThinking : m.askButton}
+            </Button>
+            <Button
+              variant="secondary"
+              onClick={() => extraInputRef.current?.click()}
+              disabled={busy}
+            >
+              {m.addAnotherFile}
             </Button>
             <p aria-live="polite" className="text-sm text-ink-muted">
               {busy ? m.askThinking : ""}
             </p>
           </div>
+
+          {/* Anything added mid-conversation is listed, so the reader can see
+              what the next answer will actually be based on. */}
+          {addedFiles.length > 0 ? (
+            <ul className="mt-3 space-y-1">
+              {addedFiles.map((f, index) => (
+                <li
+                  key={`${f.name}-${f.lastModified}-${index}`}
+                  className="flex items-center gap-2 text-sm text-ink-muted"
+                >
+                  <span dir="ltr" className="font-mono break-all">
+                    {f.name}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setAddedFiles((c) => c.filter((_, i) => i !== index))}
+                    disabled={busy}
+                    className="text-primary underline underline-offset-4 hover:text-primary-strong"
+                  >
+                    {m.removeFile}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          ) : null}
         </div>
       ) : null}
     </Card>
