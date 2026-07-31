@@ -2,7 +2,7 @@ import { LOCALES, getMessages, isLocale } from "@wg/i18n";
 import { Alert, ButtonLink } from "@wg/ui";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { GUIDES, GUIDE_LOCALES, findGuide } from "../../../../guides/guide-data";
+import { GUIDES, GUIDE_LOCALES, resolveGuide } from "../../../../guides/guide-data";
 import { SITE_URL } from "../../../../site";
 import { GuideFaqJsonLd, GuideJsonLd } from "../../../../structured-data";
 import { LegalArticle } from "../../legal-article";
@@ -20,7 +20,7 @@ export async function generateMetadata({
   params: Promise<{ locale: string; slug: string }>;
 }): Promise<Metadata> {
   const { locale, slug } = await params;
-  const guide = findGuide(slug);
+  const guide = resolveGuide(slug, locale);
   if (!isLocale(locale) || guide === undefined) return {};
 
   const canonical = `${SITE_URL}/${locale}/guides/${slug}/`;
@@ -44,7 +44,7 @@ export default async function GuidePage({
 }) {
   const { locale, slug } = await params;
   if (!isLocale(locale)) notFound();
-  const guide = findGuide(slug);
+  const guide = resolveGuide(slug, locale);
   if (guide === undefined) notFound();
   const m = getMessages(locale);
 

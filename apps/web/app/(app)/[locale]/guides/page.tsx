@@ -3,7 +3,7 @@ import { Card } from "@wg/ui";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { GUIDES, GUIDE_LOCALES } from "../../../guides/guide-data";
+import { GUIDE_LOCALES, guidesFor } from "../../../guides/guide-data";
 import { SITE_URL } from "../../../site";
 
 export const dynamicParams = false;
@@ -20,9 +20,9 @@ export async function generateMetadata({
   const { locale } = await params;
   if (!isLocale(locale)) return {};
   const canonical = `${SITE_URL}/${locale}/guides/`;
-  const title = "Common German letters, explained";
-  const description =
-    "What the letters German offices send actually mean — Jobcenter, Ausländerbehörde, BAMF, courts, health insurance and more.";
+  const m = getMessages(locale);
+  const title = m.guidesPage.title;
+  const description = m.guidesPage.lead;
   return {
     title,
     description,
@@ -42,16 +42,12 @@ export default async function GuidesIndexPage({ params }: { params: Promise<{ lo
   return (
     <div className="max-w-3xl">
       <h1 className="text-3xl sm:text-4xl font-bold text-ink leading-tight">
-        Common German letters, explained
+        {m.guidesPage.title}
       </h1>
-      <p className="mt-4 text-lg text-ink-muted leading-relaxed">
-        These explain what each kind of letter is and what it usually asks for. They are general
-        explanations, not advice about your own case — for that,{" "}
-        {m.upload.seriousLead.toLowerCase()}
-      </p>
+      <p className="mt-4 text-lg text-ink-muted leading-relaxed">{m.guidesPage.lead}</p>
 
       <ul className="mt-10 space-y-4">
-        {GUIDES.map((guide) => (
+        {guidesFor(locale).map((guide) => (
           <li key={guide.slug}>
             <Link
               href={`/${locale}/guides/${guide.slug}/`}

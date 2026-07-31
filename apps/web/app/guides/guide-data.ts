@@ -1,3 +1,5 @@
+import { arGuides } from "./ar";
+
 /**
  * Letter guides — the substantive content of the site.
  *
@@ -37,11 +39,30 @@
  *
  * Add a locale here only together with its translated text.
  */
-export const GUIDE_LOCALES = ["en"] as const;
+export const GUIDE_LOCALES = ["en", "ar"] as const;
 
 export function hasGuides(locale: string): boolean {
   return (GUIDE_LOCALES as readonly string[]).includes(locale);
 }
+
+/**
+ * The translatable part of a guide.
+ *
+ * `germanTitle`, `slug` and `highRisk` are deliberately absent: the German
+ * letter name must stay German in every language (it is the word printed on
+ * the reader's letter), the slug must stay stable because it is an indexed
+ * URL, and whether a letter type is high-risk is a property of the letter,
+ * not of who is reading about it.
+ */
+export interface GuideTranslation {
+  title: string;
+  summary: string;
+  sender: string;
+  sections: GuideSection[];
+}
+
+/** locale → slug → translated content. */
+export type GuideTranslations = Record<string, GuideTranslation>;
 
 export interface GuideSection {
   heading: string;
@@ -70,6 +91,9 @@ const DEADLINE_NOTE =
 
 const HELP_NOTE =
   "For a letter of this kind, get help from a person rather than acting alone. A Migrationsberatung (migration counselling service), a Sozialberatung, a Verbraucherzentrale, or a lawyer can read the actual letter and tell you what your options are. Many of these services are free.";
+
+/** locale -> slug -> translated content. English lives in GUIDES itself. */
+const TRANSLATIONS: Record<string, GuideTranslations> = { ar: arGuides };
 
 export const GUIDES: Guide[] = [
   {
@@ -299,4 +323,35 @@ export const GUIDES: Guide[] = [
 
 export function findGuide(slug: string): Guide | undefined {
   return GUIDES.find((guide) => guide.slug === slug);
+}
+
+/**
+ * Returns a guide with its text in the requested language.
+ *
+ * Returns undefined rather than falling back to English when a translation is
+ * missing — the fallback is exactly the bug this replaced. A caller that
+ * cannot get the reader's language must show nothing, not English.
+ */
+export function resolveGuide(slug: string, locale: string): Guide | undefined {
+  const guide = findGuide(slug);
+  if (guide === undefined) return undefined;
+  if (locale === "en") return guide;
+
+  const translated = TRANSLATIONS[locale]?.[slug];
+  if (translated === undefined) return undefined;
+
+  return {
+    ...guide,
+    title: translated.title,
+    summary: translated.summary,
+    sender: translated.sender,
+    sections: translated.sections,
+  };
+}
+
+/** Guides available in a locale, already translated. */
+export function guidesFor(locale: string): Guide[] {
+  return GUIDES.map((guide) => resolveGuide(guide.slug, locale)).filter(
+    (guide): guide is Guide => guide !== undefined,
+  );
 }

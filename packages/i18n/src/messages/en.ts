@@ -242,6 +242,10 @@ export const en = {
     // gets them a better answer.
     note: "This service is free and stays free. Donations help pay for it — they change nothing about your letter or the answer you get.",
   },
+  guidesPage: {
+    title: "Common German letters, explained",
+    lead: "These explain what each kind of letter is and what it usually asks for. They are general explanations, not advice about your own case.",
+  },
   consent: {
     title: "Can we show ads on this site?",
     body: "Ads help pay for this service. They come from Google and use cookies. Your letters are never used for ads, are never sent to advertisers, and are never stored — that does not change either way. You can say no and everything keeps working exactly the same.",
