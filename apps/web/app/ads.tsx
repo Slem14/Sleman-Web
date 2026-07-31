@@ -1,3 +1,7 @@
+"use client";
+
+import { useConsent } from "./consent";
+
 /**
  * Google AdSense integration.
  *
@@ -37,7 +41,10 @@ const AD_CLIENT = "ca-pub-7948445846326610";
 
 /** The loader tag. Rendered once per document, in <head>. */
 export function AdSenseScript() {
-  if (!ADS_ENABLED) return null;
+  const consent = useConsent();
+  // No consent, no script. Not a hidden slot — the request to Google is never
+  // made at all, which is what "prior consent" actually requires.
+  if (!ADS_ENABLED || consent !== "granted") return null;
   return (
     <script
       async

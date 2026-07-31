@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { ADS_ENABLED, BottomAd, SideAd } from "./ads";
+import { useConsent, type ConsentState } from "./consent";
 
 /**
  * Decides where ads may appear.
@@ -13,18 +14,20 @@ import { ADS_ENABLED, BottomAd, SideAd } from "./ads";
  * there too. Everything else (home, privacy, terms, AI notice) is ordinary
  * content and may carry ads.
  */
-function adsAllowed(pathname: string): boolean {
-  return ADS_ENABLED && !pathname.includes("/upload");
+function adsAllowed(pathname: string, consent: ConsentState): boolean {
+  return ADS_ENABLED && consent === "granted" && !pathname.includes("/upload");
 }
 
 export function SideAdSlot({ slot, label }: { slot: string; label: string }) {
   const pathname = usePathname();
-  if (!adsAllowed(pathname)) return null;
+  const consent = useConsent();
+  if (!adsAllowed(pathname, consent)) return null;
   return <SideAd slot={slot} label={label} />;
 }
 
 export function BottomAdSlot({ slot, label }: { slot: string; label: string }) {
   const pathname = usePathname();
-  if (!adsAllowed(pathname)) return null;
+  const consent = useConsent();
+  if (!adsAllowed(pathname, consent)) return null;
   return <BottomAd slot={slot} label={label} />;
 }
