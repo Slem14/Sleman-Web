@@ -50,6 +50,34 @@ describe("message catalogs", () => {
     expect(isLocale("en")).toBe(true);
     expect(isLocale("prs")).toBe(true);
     expect(isLocale("de")).toBe(false);
-    expect(isLocale("fa")).toBe(false);
+    expect(isLocale("xx")).toBe(false);
+  });
+
+  it("keeps Dari and Iranian Farsi as genuinely separate catalogues", () => {
+    // Both now ship. The risk this guards against is not that "fa" exists —
+    // it is that the two collapse into one another, which would put Iranian
+    // vocabulary in front of Afghan readers and vice versa.
+    expect(isLocale("fa")).toBe(true);
+    expect(isLocale("prs")).toBe(true);
+
+    const dari = getMessages("prs");
+    const farsi = getMessages("fa");
+    expect(dari.upload.title).not.toBe(farsi.upload.title);
+
+    // Afghan Dari uses مشوره; Iranian Farsi uses مشاوره. If either catalogue
+    // ever contains the other's form in this string, they have drifted.
+    expect(dari.home.privacyPoints.join(" ")).toContain("مشوره");
+    expect(farsi.home.privacyPoints.join(" ")).toContain("مشاوره");
+  });
+
+  it("completes every locale against English rather than leaving gaps", () => {
+    for (const locale of LOCALES) {
+      const messages = getMessages(locale);
+      // A missing key would surface as undefined and render blank — the whole
+      // point of the fallback is that this cannot happen.
+      expect(messages.upload.errors.NETWORK).toBeTruthy();
+      expect(messages.privacyPage.title).toBeTruthy();
+      expect(messages.footer.notLegalAdvice).toBeTruthy();
+    }
   });
 });

@@ -12,7 +12,7 @@ import { applyPostChecks } from "../safety/post-checks.js";
 import { applyRiskEscalation } from "../safety/risk-classifier.js";
 
 /** Locales the analysis can be explained in — mirrors @wg/i18n LOCALES. */
-const OUTPUT_LANGUAGES = new Set(["en", "prs"]);
+const OUTPUT_LANGUAGES = new Set(["en", "ar", "tr", "uk", "ru", "prs", "fa", "ps", "ku", "ti"]);
 
 /** Map provider failures to stable public error codes (no internals leak). */
 function providerErrorCode(err: unknown): UploadErrorCode {

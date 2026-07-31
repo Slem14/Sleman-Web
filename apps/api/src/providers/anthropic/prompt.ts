@@ -22,7 +22,15 @@ export const PROMPT_VERSION = "1.1.0";
 /** Human-readable language names used in the instruction text. */
 const LANGUAGE_NAMES: Record<string, string> = {
   en: "English",
+  ar: "Arabic",
+  tr: "Turkish",
+  uk: "Ukrainian",
+  ru: "Russian",
   prs: "Dari (Afghan Persian)",
+  fa: "Persian (Iranian Farsi)",
+  ps: "Pashto",
+  ku: "Kurmanji Kurdish (Latin script)",
+  ti: "Tigrinya",
 };
 
 /**
@@ -38,6 +46,22 @@ const LANGUAGE_NOTES: Record<string, string> = {
     "Use Afghan vocabulary and register. For example, prefer پوهنتون over دانشگاه, تلیفون over تلفن, مشوره over مشاوره, محکمه over دادگاه.",
     "Keep sentences short and plain. Many readers are not comfortable with formal bureaucratic writing in any language.",
   ].join(" "),
+  fa: [
+    "Write in Persian as spoken and written in Iran — NOT Afghan Dari.",
+    "Use Iranian vocabulary: دانشگاه, تلفن, مشاوره, دادگاه.",
+    "Keep sentences short and plain, and avoid literary or bureaucratic register.",
+  ].join(" "),
+  ar: [
+    "Write in Modern Standard Arabic that an ordinary reader can follow — not literary or legalistic Arabic.",
+    "Short sentences. Avoid classical constructions that would slow a reader who is anxious.",
+    "Readers come from many countries; avoid vocabulary specific to a single dialect.",
+  ].join(" "),
+  tr: "Write in plain Turkish, using the formal 'siz'. Short sentences, no bureaucratic register, and explain any legal term immediately.",
+  uk: "Write in Ukrainian — not Russian, and avoid russisms. Use formal 'ви'. Short, plain sentences.",
+  ru: "Write in plain Russian using formal 'вы'. Short sentences, no bureaucratic register.",
+  ps: "Write in Pashto as used in Afghanistan. Short, plain sentences; avoid heavy literary register.",
+  ku: "Write in Kurmanji Kurdish in the Latin script — NOT Sorani and not Arabic script. Short, plain sentences.",
+  ti: "Write in Tigrinya in the Ge'ez script. Short, plain sentences. Prefer common everyday words over formal or church register.",
 };
 
 /**

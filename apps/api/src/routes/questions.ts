@@ -17,7 +17,7 @@ import {
   type DocumentFile,
 } from "../providers/types.js";
 
-const OUTPUT_LANGUAGES = new Set(["en", "prs"]);
+const OUTPUT_LANGUAGES = new Set(["en", "ar", "tr", "uk", "ru", "prs", "fa", "ps", "ku", "ti"]);
 
 const historySchema = z.array(priorExchangeSchema).max(MAX_PRIOR_EXCHANGES);
 

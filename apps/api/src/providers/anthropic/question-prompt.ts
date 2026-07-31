@@ -16,12 +16,28 @@ export const QUESTION_PROMPT_VERSION = "1.0.0";
 
 const LANGUAGE_NAMES: Record<string, string> = {
   en: "English",
+  ar: "Arabic",
+  tr: "Turkish",
+  uk: "Ukrainian",
+  ru: "Russian",
   prs: "Dari (Afghan Persian)",
+  fa: "Persian (Iranian Farsi)",
+  ps: "Pashto",
+  ku: "Kurmanji Kurdish (Latin script)",
+  ti: "Tigrinya",
 };
 
 const LANGUAGE_NOTES: Record<string, string> = {
   en: "Write in clear, simple English suitable for someone who is not a native speaker. Short sentences.",
+  ar: "Write in Modern Standard Arabic an ordinary reader can follow — not literary or legalistic. Short sentences.",
+  tr: "Write in plain Turkish using formal 'siz'. Short sentences.",
+  uk: "Write in Ukrainian — not Russian, and avoid russisms. Formal 'ви'. Short sentences.",
+  ru: "Write in plain Russian using formal 'вы'. Short sentences.",
   prs: "Write in Dari as spoken in Afghanistan — NOT Iranian Farsi. Use Afghan vocabulary (پوهنتون, تلیفون, مشوره, محکمه). Keep sentences short and plain.",
+  fa: "Write in Iranian Persian — NOT Afghan Dari. Use Iranian vocabulary (دانشگاه, تلفن, مشاوره, دادگاه). Short, plain sentences.",
+  ps: "Write in Pashto as used in Afghanistan. Short, plain sentences.",
+  ku: "Write in Kurmanji Kurdish in the Latin script — NOT Sorani. Short, plain sentences.",
+  ti: "Write in Tigrinya in the Ge'ez script. Short, plain, everyday words.",
 };
 
 export function buildQuestionPrompt(outputLanguage: string, history: PriorExchange[]): string {

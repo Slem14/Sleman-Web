@@ -19,8 +19,11 @@ export const en = {
     subtitle: "زبان خود را انتخاب کنید",
     hint: "You can change this anytime.",
     continueSaved: "Continue in",
+    // This replaces a claim that every language had been reviewed by native
+    // speakers. That is no longer true, and on a service about legal deadlines
+    // an inaccurate reassurance is worse than an honest caveat.
     comingLater:
-      "More languages are planned. We only add a language once native speakers have reviewed it.",
+      "Only English has been checked by a native speaker so far. The other languages are machine-translated and are being reviewed — the explanation of your letter is still based on the original German, which is always shown alongside it.",
   },
   home: {
     heroTitle: "Got a German letter you don't understand?",

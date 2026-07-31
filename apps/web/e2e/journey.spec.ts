@@ -9,14 +9,27 @@ test.describe("language selection", () => {
     await expectNoSeriousA11yViolations(page);
   });
 
-  test("upcoming languages are visible but not clickable", async ({ page }) => {
+  test("every offered language is a working link, not a false door", async ({ page }) => {
     await page.goto("/");
-    await expect(page.getByText("العربية")).toBeVisible();
-    await expect(page.getByText("Українська")).toBeVisible();
-    await expect(page.getByText("پښتو")).toBeVisible();
-    // They are announcements, not links — no false doors.
-    await expect(page.getByRole("link", { name: /العربية/ })).toHaveCount(0);
-    await expect(page.getByRole("link", { name: /Türkçe/ })).toHaveCount(0);
+    // These were previously shown as disabled announcements. They now all
+    // ship, so each must actually go somewhere — a language card that looks
+    // available and does nothing is worse than not listing it.
+    for (const native of ["العربية", "Türkçe", "Українська", "Русский", "پښتو", "Kurdî", "ትግርኛ"]) {
+      await expect(page.getByRole("link", { name: new RegExp(native) })).toBeVisible();
+    }
+  });
+
+  test("Dari and Farsi are offered as separate languages", async ({ page }) => {
+    await page.goto("/");
+    // Same script, different languages. Conflating them would put Iranian
+    // vocabulary in front of Afghan readers, which is the exact mistake this
+    // product set out not to make.
+    await expect(page.getByRole("link", { name: /دری/ })).toBeVisible();
+    await expect(page.getByRole("link", { name: /فارسی/ })).toBeVisible();
+
+    await page.getByRole("link", { name: /فارسی/ }).click();
+    await expect(page).toHaveURL(/\/fa\/$/);
+    await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
   });
 
   test("theme toggle switches and persists the theme", async ({ page }) => {
