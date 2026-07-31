@@ -8,6 +8,7 @@ import { BottomAdSlot, SideAdSlot } from "../../ad-slots";
 import { AdSenseScript } from "../../ads";
 import { ConsentBanner } from "../../consent";
 import { DonateLink } from "../../donate-link";
+import { hasGuides } from "../../guides/guide-data";
 import { SITE_URL } from "../../site";
 import { fontVariables } from "../../fonts";
 import { THEME_INIT_SCRIPT, ThemeToggle } from "../../theme";
@@ -138,9 +139,14 @@ export default async function LocaleLayout({
         <footer className="border-t border-line bg-surface mt-16">
           <div className="mx-auto max-w-6xl px-6 py-8">
             <nav aria-label={m.footer.privacy} className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
-              <Link href={`/${locale}/guides/`} className="text-ink-muted hover:text-primary">
-                Letter guides
-              </Link>
+              {/* Shown only where the guides are translated — see
+                  GUIDE_LOCALES. A link to prose the reader cannot read is
+                  worse than no link. */}
+              {hasGuides(locale) ? (
+                <Link href={`/${locale}/guides/`} className="text-ink-muted hover:text-primary">
+                  {m.footer.guides}
+                </Link>
+              ) : null}
               <Link href={`/${locale}/privacy`} className="text-ink-muted hover:text-primary">
                 {m.footer.privacy}
               </Link>

@@ -26,6 +26,23 @@
  *    human help early and prominently, not as a footnote.
  */
 
+/**
+ * Locales whose guide text actually exists in that language.
+ *
+ * The rule for this product is that once someone picks a language, they never
+ * see text in a language they cannot read. English prose under an Arabic
+ * shell breaks that, so a locale only appears here once its guides are
+ * genuinely translated — and until then the guides are not offered in it at
+ * all. Fewer pages, but no page that lies about being readable.
+ *
+ * Add a locale here only together with its translated text.
+ */
+export const GUIDE_LOCALES = ["en"] as const;
+
+export function hasGuides(locale: string): boolean {
+  return (GUIDE_LOCALES as readonly string[]).includes(locale);
+}
+
 export interface GuideSection {
   heading: string;
   /** Paragraphs. Rendered as text, never as HTML. */

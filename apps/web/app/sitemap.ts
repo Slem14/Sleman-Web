@@ -1,6 +1,6 @@
 import { LOCALES } from "@wg/i18n";
 import type { MetadataRoute } from "next";
-import { GUIDES } from "./guides/guide-data";
+import { GUIDES, hasGuides } from "./guides/guide-data";
 import { SITE_URL } from "./site";
 
 /**
@@ -31,6 +31,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   for (const path of PATHS) {
     for (const locale of LOCALES) {
+      // Guides exist only where they are genuinely translated. Listing an
+      // untranslated locale would send a searcher to a page in a language
+      // they cannot read, which is the thing this rule exists to prevent.
+      if (path.startsWith("guides") && !hasGuides(locale)) continue;
       const suffix = path === "" ? "" : `${path}/`;
       entries.push({
         url: `${SITE_URL}/${locale}/${suffix}`,

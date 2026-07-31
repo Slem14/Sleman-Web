@@ -3,13 +3,13 @@ import { Card } from "@wg/ui";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { GUIDES } from "../../../guides/guide-data";
+import { GUIDES, GUIDE_LOCALES } from "../../../guides/guide-data";
 import { SITE_URL } from "../../../site";
 
 export const dynamicParams = false;
 
 export function generateStaticParams() {
-  return LOCALES.map((locale) => ({ locale }));
+  return GUIDE_LOCALES.map((locale) => ({ locale }));
 }
 
 export async function generateMetadata({

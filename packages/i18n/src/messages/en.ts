@@ -250,6 +250,7 @@ export const en = {
     more: "Read what we do with your data",
   },
   footer: {
+    guides: "Letter guides",
     privacy: "Privacy",
     terms: "Terms & Disclaimer",
     ai: "About the AI",

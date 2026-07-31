@@ -20,7 +20,7 @@ const OUT_DIR = join(import.meta.dirname, "..", ".next-build");
 // Kept in step with @wg/i18n LOCALES and guides/guide-data.ts. Duplicated
 // deliberately: this script must be able to run against a built artifact
 // without importing TypeScript sources.
-const LOCALES = ["en", "ar", "tr", "uk", "ru", "prs", "fa", "ps", "ku", "ti"];
+const GUIDE_LOCALES = ["en"];
 const GUIDE_SLUGS = [
   "jobcenter-bescheid",
   "mahnung",
@@ -58,7 +58,7 @@ for (const page of requiredPages) {
 // 1a. Every guide must exist in every locale. These are the pages that answer
 //     a search query directly, so a guide silently failing to export would
 //     remove the site's only substantive content without breaking the build.
-for (const locale of LOCALES) {
+for (const locale of GUIDE_LOCALES) {
   check(
     `missing guides index: ${locale}`,
     existsSync(join(OUT_DIR, locale, "guides", "index.html")),

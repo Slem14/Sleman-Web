@@ -2,14 +2,16 @@ import { LOCALES, getMessages, isLocale } from "@wg/i18n";
 import { Alert, ButtonLink } from "@wg/ui";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { GUIDES, findGuide } from "../../../../guides/guide-data";
+import { GUIDES, GUIDE_LOCALES, findGuide } from "../../../../guides/guide-data";
 import { SITE_URL } from "../../../../site";
+import { GuideFaqJsonLd, GuideJsonLd } from "../../../../structured-data";
 import { LegalArticle } from "../../legal-article";
 
 export const dynamicParams = false;
 
 export function generateStaticParams() {
-  return LOCALES.flatMap((locale) => GUIDES.map((guide) => ({ locale, slug: guide.slug })));
+  // Only locales whose guides are genuinely translated — see GUIDE_LOCALES.
+  return GUIDE_LOCALES.flatMap((locale) => GUIDES.map((guide) => ({ locale, slug: guide.slug })));
 }
 
 export async function generateMetadata({
@@ -48,6 +50,13 @@ export default async function GuidePage({
 
   return (
     <LegalArticle title={guide.title}>
+      {/* Declares what this page IS. Google builds rich results from it, and
+          AI assistants lean on it when deciding what a page can be cited for
+          — a page that says "this answers X" gets quoted; undifferentiated
+          prose usually does not. Every field mirrors visible text, so this is
+          description rather than cloaking. */}
+      <GuideJsonLd guide={guide} locale={locale} />
+      <GuideFaqJsonLd guide={guide} />
       {/* German name stays LTR and in German even inside RTL layouts — it is
           the string the reader must match against their own letter. */}
       <p dir="ltr" lang="de" className="font-mono text-sm text-ink-muted">
