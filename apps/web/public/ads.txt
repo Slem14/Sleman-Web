@@ -1,0 +1,11 @@
+# Authorized Digital Sellers (IAB ads.txt)
+#
+# Declares that Google AdSense is authorised to sell inventory on this
+# domain. Used here as the AdSense site-verification method instead of the
+# script snippet, deliberately: this is a static text file. It loads no
+# JavaScript, sets no cookies and causes no request from a visitor's browser
+# to Google — so ownership can be verified while ads themselves stay switched
+# off (see ADS_ENABLED in apps/web/app/ads.tsx) until a consent banner exists.
+#
+# Format: <domain>, <publisher id>, <relationship>, <certification authority>
+google.com, pub-7948445846326610, DIRECT, f08c47fec0942fa0

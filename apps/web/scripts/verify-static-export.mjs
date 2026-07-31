@@ -56,6 +56,11 @@ check("sitemap.xml is missing", existsSync(join(OUT_DIR, "sitemap.xml")));
 //     from this file on every deploy, and a deploy without it silently resets
 //     the domain — which has already happened once on this project and takes
 //     the whole site offline until someone notices.
+// 3b. ads.txt must survive the export. It is the AdSense site-verification
+//     method, and it is a plain file with no script — losing it would silently
+//     un-verify the site without breaking anything visible.
+check("ads.txt is missing from the export", existsSync(join(OUT_DIR, "ads.txt")));
+
 const cnamePath = join(OUT_DIR, "CNAME");
 check("CNAME is missing from the export", existsSync(cnamePath));
 if (existsSync(cnamePath)) {
