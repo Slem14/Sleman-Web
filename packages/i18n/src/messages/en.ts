@@ -235,6 +235,13 @@ export const en = {
       "Legal provider identification (Impressum) will be published here before public launch, as required by German law (§ 5 DDG).",
     legalBasis: "Provider identification under § 5 DDG (Digitale-Dienste-Gesetz).",
   },
+  donate: {
+    label: "Support this site",
+    // Says what the money is for and, just as importantly, what it is not for.
+    // Someone reading a deportation notice must never wonder whether paying
+    // gets them a better answer.
+    note: "This service is free and stays free. Donations help pay for it — they change nothing about your letter or the answer you get.",
+  },
   consent: {
     title: "Can we show ads on this site?",
     body: "Ads help pay for this service. They come from Google and use cookies. Your letters are never used for ads, are never sent to advertisers, and are never stored — that does not change either way. You can say no and everything keeps working exactly the same.",

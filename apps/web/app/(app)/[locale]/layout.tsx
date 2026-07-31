@@ -7,6 +7,7 @@ import type { ReactNode } from "react";
 import { BottomAdSlot, SideAdSlot } from "../../ad-slots";
 import { AdSenseScript } from "../../ads";
 import { ConsentBanner } from "../../consent";
+import { DonateLink } from "../../donate-link";
 import { SITE_URL } from "../../site";
 import { fontVariables } from "../../fonts";
 import { THEME_INIT_SCRIPT, ThemeToggle } from "../../theme";
@@ -153,6 +154,9 @@ export default async function LocaleLayout({
                 {m.footer.impressum}
               </Link>
             </nav>
+            {/* A plain link, not the Ko-fi widget — see app/donate.ts. */}
+            <DonateLink label={m.donate.label} note={m.donate.note} />
+
             <p className="mt-4 text-xs text-ink-muted">{m.footer.notLegalAdvice}</p>
           </div>
         </footer>
