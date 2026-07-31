@@ -139,6 +139,10 @@ export const tr: PartialMessages = {
     unavailableText:
       "Analiz hizmetine şu anda ulaşamıyoruz. Lütfen kısa süre sonra tekrar deneyin.",
   },
+  guidesPage: {
+    title: "Sık gelen Almanca mektuplar, açıklandı",
+    lead: "Bunlar her mektup türünün ne olduğunu ve genellikle ne istediğini açıklar. Genel açıklamalardır; kendi durumunuza dair tavsiye değildir.",
+  },
   footer: {
     privacy: "Gizlilik",
     terms: "Koşullar ve sorumluluk reddi",

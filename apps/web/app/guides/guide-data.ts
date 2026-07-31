@@ -1,4 +1,5 @@
 import { arGuides } from "./ar";
+import { trGuides } from "./tr";
 
 /**
  * Letter guides — the substantive content of the site.
@@ -39,7 +40,7 @@ import { arGuides } from "./ar";
  *
  * Add a locale here only together with its translated text.
  */
-export const GUIDE_LOCALES = ["en", "ar"] as const;
+export const GUIDE_LOCALES = ["en", "ar", "tr"] as const;
 
 export function hasGuides(locale: string): boolean {
   return (GUIDE_LOCALES as readonly string[]).includes(locale);
@@ -93,7 +94,7 @@ const HELP_NOTE =
   "For a letter of this kind, get help from a person rather than acting alone. A Migrationsberatung (migration counselling service), a Sozialberatung, a Verbraucherzentrale, or a lawyer can read the actual letter and tell you what your options are. Many of these services are free.";
 
 /** locale -> slug -> translated content. English lives in GUIDES itself. */
-const TRANSLATIONS: Record<string, GuideTranslations> = { ar: arGuides };
+const TRANSLATIONS: Record<string, GuideTranslations> = { ar: arGuides, tr: trGuides };
 
 export const GUIDES: Guide[] = [
   {
