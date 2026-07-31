@@ -6,6 +6,7 @@ import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
 import { BottomAdSlot, SideAdSlot } from "../../ad-slots";
 import { AdSenseScript } from "../../ads";
+import { ConsentBanner } from "../../consent";
 import { SITE_URL } from "../../site";
 import { fontVariables } from "../../fonts";
 import { THEME_INIT_SCRIPT, ThemeToggle } from "../../theme";
@@ -130,6 +131,8 @@ export default async function LocaleLayout({
         {/* Below the content: reached only once the reader has scrolled past
             everything that actually matters. */}
         <BottomAdSlot slot="2" label={m.footer.notLegalAdvice} />
+
+        <ConsentBanner copy={m.consent} privacyHref={`/${locale}/privacy`} />
 
         <footer className="border-t border-line bg-surface mt-16">
           <div className="mx-auto max-w-6xl px-6 py-8">

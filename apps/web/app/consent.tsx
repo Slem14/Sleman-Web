@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 /**
  * Cookie/ads consent.
@@ -65,13 +65,45 @@ export function ConsentBanner({ copy, privacyHref }: { copy: ConsentCopy; privac
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
+  const ref = useRef<HTMLDivElement>(null);
+  const visible = mounted && consent === "unset";
+
+  /**
+   * Reserve space equal to the banner's height while it is shown.
+   *
+   * Without this the fixed banner sits on top of the end of the page and the
+   * footer links underneath it cannot be clicked — which the e2e suite caught.
+   * Covering content the reader is trying to reach, until they answer a
+   * question about ads, is the kind of coercion this banner is supposed not to
+   * be. Measured rather than hard-coded because the text wraps differently in
+   * ten languages.
+   */
+  useEffect(() => {
+    if (!visible) return;
+    const element = ref.current;
+    if (element === null) return;
+
+    const apply = () => {
+      document.body.style.paddingBottom = `${element.offsetHeight}px`;
+    };
+    apply();
+
+    const observer = new ResizeObserver(apply);
+    observer.observe(element);
+    return () => {
+      observer.disconnect();
+      document.body.style.paddingBottom = "";
+    };
+  }, [visible]);
+
   // Rendered only after mount: the server cannot know the stored choice, and
   // showing the banner during hydration would flash it at people who already
   // answered.
-  if (!mounted || consent !== "unset") return null;
+  if (!visible) return null;
 
   return (
     <div
+      ref={ref}
       role="dialog"
       aria-modal="false"
       aria-labelledby="consent-title"

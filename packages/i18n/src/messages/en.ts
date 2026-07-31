@@ -183,8 +183,11 @@ export const en = {
         body: "Your selected language is saved only in your own browser, so the site opens in your language next time. It is not sent to us.",
       },
       {
-        heading: "No tracking",
-        body: "No advertising, no tracking cookies, no analytics scripts that follow you, no session recording.",
+        // Rewritten when advertising was introduced. The previous version said
+        // "no advertising", which stopped being true — and a privacy notice
+        // that overstates protection is worse than one that admits a limit.
+        heading: "Advertising and tracking",
+        body: "We ask before showing any ads. If you say no, no advertising code is loaded at all — not hidden, not delayed, simply never requested. If you say yes, ads are served by Google and use cookies. Either way: your letters are never used for advertising, never shared with advertisers, and never stored. There are no analytics scripts following you and no session recording.",
       },
       {
         heading: "Questions and rights",
@@ -231,6 +234,13 @@ export const en = {
     placeholder:
       "Legal provider identification (Impressum) will be published here before public launch, as required by German law (§ 5 DDG).",
     legalBasis: "Provider identification under § 5 DDG (Digitale-Dienste-Gesetz).",
+  },
+  consent: {
+    title: "Can we show ads on this site?",
+    body: "Ads help pay for this service. They come from Google and use cookies. Your letters are never used for ads, are never sent to advertisers, and are never stored — that does not change either way. You can say no and everything keeps working exactly the same.",
+    accept: "Yes, allow ads",
+    reject: "No, no ads",
+    more: "Read what we do with your data",
   },
   footer: {
     privacy: "Privacy",
