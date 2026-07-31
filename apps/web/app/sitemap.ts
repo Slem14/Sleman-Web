@@ -1,5 +1,6 @@
 import { LOCALES } from "@wg/i18n";
 import type { MetadataRoute } from "next";
+import { GUIDES } from "./guides/guide-data";
 import { SITE_URL } from "./site";
 
 /**
@@ -9,7 +10,19 @@ import { SITE_URL } from "./site";
  * a search engine can offer a Dari speaker the Dari page rather than the
  * English one. Generated at build time into the static export.
  */
-const PATHS = ["", "upload", "privacy", "terms", "ai", "impressum"] as const;
+const PATHS = [
+  "",
+  "upload",
+  "guides",
+  // Each guide is its own indexable page — they are the pages that answer a
+  // search query directly, so they must appear individually rather than only
+  // behind the index.
+  ...GUIDES.map((guide) => `guides/${guide.slug}`),
+  "privacy",
+  "terms",
+  "ai",
+  "impressum",
+] as const satisfies readonly string[];
 
 export const dynamic = "force-static";
 

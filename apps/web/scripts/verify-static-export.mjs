@@ -17,6 +17,21 @@ import { join } from "node:path";
 
 const OUT_DIR = join(import.meta.dirname, "..", ".next-build");
 
+// Kept in step with @wg/i18n LOCALES and guides/guide-data.ts. Duplicated
+// deliberately: this script must be able to run against a built artifact
+// without importing TypeScript sources.
+const LOCALES = ["en", "ar", "tr", "uk", "ru", "prs", "fa", "ps", "ku", "ti"];
+const GUIDE_SLUGS = [
+  "jobcenter-bescheid",
+  "mahnung",
+  "auslaenderbehoerde-anhoerung",
+  "krankenkasse-beitragsbescheid",
+  "kuendigung-wohnung",
+  "bamf-bescheid",
+  "rundfunkbeitrag",
+  "gerichtspost",
+];
+
 const failures = [];
 const check = (label, condition) => {
   if (!condition) failures.push(label);
@@ -38,6 +53,22 @@ const requiredPages = [
 ];
 for (const page of requiredPages) {
   check(`missing page: ${page}`, existsSync(join(OUT_DIR, page)));
+}
+
+// 1a. Every guide must exist in every locale. These are the pages that answer
+//     a search query directly, so a guide silently failing to export would
+//     remove the site's only substantive content without breaking the build.
+for (const locale of LOCALES) {
+  check(
+    `missing guides index: ${locale}`,
+    existsSync(join(OUT_DIR, locale, "guides", "index.html")),
+  );
+  for (const guide of GUIDE_SLUGS) {
+    check(
+      `missing guide: ${locale}/${guide}`,
+      existsSync(join(OUT_DIR, locale, "guides", guide, "index.html")),
+    );
+  }
 }
 
 // 2. The 404 page renders our content, not a framework default.

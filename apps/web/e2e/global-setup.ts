@@ -25,6 +25,11 @@ const ROUTES = [
   "/en/impressum/",
   "/prs/privacy/",
   "/prs/terms/",
+  // The guides add ~90 statically generated pages. Compiling them on demand
+  // mid-suite is what makes the whole run look broken.
+  "/en/guides/",
+  "/prs/guides/",
+  "/en/guides/jobcenter-bescheid/",
 ];
 
 export default async function globalSetup(): Promise<void> {

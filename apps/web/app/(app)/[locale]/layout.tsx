@@ -137,6 +137,9 @@ export default async function LocaleLayout({
         <footer className="border-t border-line bg-surface mt-16">
           <div className="mx-auto max-w-6xl px-6 py-8">
             <nav aria-label={m.footer.privacy} className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
+              <Link href={`/${locale}/guides/`} className="text-ink-muted hover:text-primary">
+                Letter guides
+              </Link>
               <Link href={`/${locale}/privacy`} className="text-ink-muted hover:text-primary">
                 {m.footer.privacy}
               </Link>
