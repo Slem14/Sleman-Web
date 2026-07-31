@@ -94,7 +94,7 @@ export default async function LocaleLayout({
             >
               <Logo size={28} animated className="shrink-0" />
               <span>
-                Welcome<span className="text-primary"> Germany</span>
+                Welcome<span className="text-primary"> Deutschland</span>
               </span>
             </Link>
             <div className="flex items-center gap-3">

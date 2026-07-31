@@ -2,7 +2,7 @@ import tseslint from "typescript-eslint";
 import prettier from "eslint-config-prettier";
 
 /**
- * Shared base ESLint flat config for all Welcome Germany packages.
+ * Shared base ESLint flat config for all Welcome Deutschland packages.
  * Framework-specific additions (Next.js plugin, a11y) arrive in Stage 2.
  */
 export default tseslint.config(

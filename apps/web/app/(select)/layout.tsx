@@ -7,7 +7,7 @@ import "../globals.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: "Welcome Germany — Understand your German letters",
+  title: "Welcome Deutschland — Understand your German letters",
   description:
     "Upload a photo of a German official letter and get a clear explanation in your language: who sent it, what it asks you to do, and by when. Free, no account, nothing stored.",
   robots: { index: true, follow: true },
@@ -15,8 +15,8 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     url: `${SITE_URL}/`,
-    siteName: "Welcome Germany",
-    title: "Welcome Germany — Understand your German letters",
+    siteName: "Welcome Deutschland",
+    title: "Welcome Deutschland — Understand your German letters",
     description:
       "Upload a photo of a German official letter and get a clear explanation in your language.",
   },

@@ -5,7 +5,7 @@ import { THEME_INIT_SCRIPT } from "./theme";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Page not found — Welcome Germany",
+  title: "Page not found — Welcome Deutschland",
   robots: { index: false, follow: false },
 };
 
@@ -32,7 +32,7 @@ export default function NotFound() {
         </div>
         <main className="max-w-md text-center">
           <p className="font-mono text-xs font-bold uppercase tracking-[0.3em] text-ink-muted">
-            Welcome<span className="text-primary"> Germany</span>
+            Welcome<span className="text-primary"> Deutschland</span>
           </p>
           <h1 className="mt-6 text-3xl font-bold text-ink">Page not found</h1>
           <p className="mt-3 text-ink-muted leading-relaxed">

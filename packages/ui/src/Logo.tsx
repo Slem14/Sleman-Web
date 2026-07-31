@@ -7,7 +7,7 @@ export interface LogoProps {
 }
 
 /**
- * The Welcome Germany mark.
+ * The Welcome Deutschland mark.
  *
  * A page whose top line is still broken into fragments while the lines below
  * it have resolved into whole, readable bars — the product's whole promise in
@@ -31,7 +31,7 @@ export function Logo({ size = 32, animated = false, className }: LogoProps) {
       width={size}
       height={size}
       role="img"
-      aria-label="Welcome Germany"
+      aria-label="Welcome Deutschland"
       className={className}
     >
       <defs>

@@ -36,7 +36,7 @@ export function LiveGreeting() {
   const g = GREETINGS[index] ?? GREETINGS[0]!;
 
   return (
-    <h1 aria-label="Welcome Germany — choose your language" className="text-center">
+    <h1 aria-label="Welcome Deutschland — choose your language" className="text-center">
       <span
         aria-hidden="true"
         className="block h-[1.3em] text-4xl sm:text-5xl font-bold text-ink overflow-hidden"
@@ -49,7 +49,7 @@ export function LiveGreeting() {
         aria-hidden="true"
         className="mt-3 block font-mono text-sm font-bold uppercase tracking-[0.35em] text-primary"
       >
-        Welcome Germany
+        Welcome Deutschland
       </span>
     </h1>
   );

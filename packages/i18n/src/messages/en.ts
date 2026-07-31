@@ -5,7 +5,7 @@
  */
 export const en = {
   common: {
-    appName: "Welcome Germany",
+    appName: "Welcome Deutschland",
     tagline: "Understand your German letters — in your language.",
     continue: "Continue",
     back: "Back",
@@ -150,7 +150,7 @@ export const en = {
     title: "Privacy Notice",
     draftBadge: "Draft — pending professional legal review",
     intro:
-      "This page explains, in plain language, what happens to your data when you use Welcome Germany. The short version: we designed this service so that we know as little about you as possible.",
+      "This page explains, in plain language, what happens to your data when you use Welcome Deutschland. The short version: we designed this service so that we know as little about you as possible.",
     sections: [
       {
         heading: "Your letter",
@@ -188,7 +188,7 @@ export const en = {
     sections: [
       {
         heading: "What this service is",
-        body: "Welcome Germany helps you understand the content of German administrative letters. It gives you an AI-generated explanation for information purposes.",
+        body: "Welcome Deutschland helps you understand the content of German administrative letters. It gives you an AI-generated explanation for information purposes.",
       },
       {
         heading: "What this service is not",
