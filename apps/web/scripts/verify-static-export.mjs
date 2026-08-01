@@ -20,7 +20,7 @@ const OUT_DIR = join(import.meta.dirname, "..", ".next-build");
 // Kept in step with @wg/i18n LOCALES and guides/guide-data.ts. Duplicated
 // deliberately: this script must be able to run against a built artifact
 // without importing TypeScript sources.
-const GUIDE_LOCALES = ["en", "ar", "tr", "uk", "ru"];
+const GUIDE_LOCALES = ["en", "ar", "tr", "uk", "ru", "prs"];
 const GUIDE_SLUGS = [
   "jobcenter-bescheid",
   "mahnung",
