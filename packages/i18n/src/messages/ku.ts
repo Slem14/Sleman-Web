@@ -150,7 +150,12 @@ export const ku: PartialMessages = {
     title: "Nameyên almanî yên berbelav — ravekirin",
     lead: "Ev rûpel rave dikin ku her cureyê nameyê çi ye û bi gelemperî çi dixwaze. Ev ravekirinên giştî ne, ne şêwirmendî li ser doza we ya kesane.",
   },
+  donate: {
+    label: "Piştgiriya vê malperê bikin",
+    note: "Ev xizmet belaş e û wê belaş bimîne. Bexş alîkariya lêçûnan dikin — ew tiştekî di nameya we de an di bersiva ku hûn distînin de naguherînin.",
+  },
   footer: {
+    guides: "Rêbernameyên nameyan",
     privacy: "Nepenîtî",
     terms: "Mercan û redkirin",
     ai: "Der barê zîrekiya çêkirî de",

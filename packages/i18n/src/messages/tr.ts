@@ -143,7 +143,12 @@ export const tr: PartialMessages = {
     title: "Sık gelen Almanca mektuplar, açıklandı",
     lead: "Bunlar her mektup türünün ne olduğunu ve genellikle ne istediğini açıklar. Genel açıklamalardır; kendi durumunuza dair tavsiye değildir.",
   },
+  donate: {
+    label: "Bu siteyi destekleyin",
+    note: "Bu hizmet ücretsizdir ve ücretsiz kalacaktır. Bağışlar masrafların karşılanmasına yardımcı olur — mektubunuzla ilgili hiçbir şeyi ya da aldığınız yanıtı değiştirmez.",
+  },
   footer: {
+    guides: "Mektup rehberleri",
     privacy: "Gizlilik",
     terms: "Koşullar ve sorumluluk reddi",
     ai: "Yapay zekâ hakkında",
