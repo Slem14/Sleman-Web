@@ -226,7 +226,11 @@ export const en = {
       "The AI is instructed to only report what the letter actually says, to show the German text supporting each conclusion, and to say clearly when something is uncertain.",
       "The AI is instructed to never give legal conclusions and to flag serious letters for qualified human help.",
       "Despite these safeguards, AI can misunderstand text. Treat the result as a well-prepared explanation, not as a certified translation or advice.",
-      "Your letter is not used to train any AI model.",
+      // Was "Your letter is not used to train any AI model." That directly
+      // contradicted the privacy notice, which states the current free tier
+      // may retain and train on content. Two pages disagreeing about the one
+      // question a reader most needs answered is worse than an awkward truth.
+      "We do not store your letter and never use it to train anything ourselves. The AI provider is a separate matter: on the free tier we currently use, their terms allow them to retain content and improve their models with it. The privacy notice explains this in full.",
     ] as ReadonlyArray<string>,
   },
   impressumPage: {

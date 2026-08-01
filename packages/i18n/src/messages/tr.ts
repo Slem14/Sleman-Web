@@ -143,9 +143,92 @@ export const tr: PartialMessages = {
     title: "Sık gelen Almanca mektuplar, açıklandı",
     lead: "Bunlar her mektup türünün ne olduğunu ve genellikle ne istediğini açıklar. Genel açıklamalardır; kendi durumunuza dair tavsiye değildir.",
   },
+  privacyPage: {
+    title: "Gizlilik Bildirimi",
+    draftBadge: "Taslak — uzman hukuki inceleme bekliyor",
+    intro:
+      "Bu sayfa, Welcome Deutschland kullandığınızda verilerinize ne olduğunu sade bir dille açıklar. Kısacası: bu hizmeti sizin hakkınızda mümkün olduğunca az şey bilecek şekilde tasarladık.",
+    sections: [
+      {
+        heading: "Mektubunuz",
+        body: "Yüklediğiniz mektup yalnızca açıklamanızı oluşturmak için işlenir. Analizin sürdüğü birkaç saniye boyunca bellekte tutulur, sonra atılır. Diske kaydetmeyiz, kopya saklamayız ve sonrasında geri getiremeyiz — bizden istesiniz bile.",
+      },
+      {
+        heading: "Kullandığımız yapay zekâ hizmeti",
+        body: "Mektubunuzu okumak için onu Google Gemini hizmetine gönderiyoruz. Bu, mektubunuzun içeriğinin sistemlerimizden çıkması ve Google tarafından kendi koşullarına göre işlenmesi anlamına gelir. Şu anda ücretsiz katmanı kullanıyoruz ve Google koşullarına göre bu katmanda gönderilen içerik saklanabilir ve modellerini geliştirmek için kullanılabilir. Bunu hariç tutan ücretli bir anlaşma için çalışıyoruz. O zamana kadar, özellikle hassas gördüğünüz mektuplarda bunu göz önünde bulundurun.",
+      },
+      {
+        heading: "Hesap yok, profil yok",
+        body: "Hesap oluşturmuyorsunuz. Sizinle ilgili bir profil oluşturmuyoruz. Kim olduğunuzu bilmiyoruz.",
+      },
+      {
+        heading: "Neyi kaydediyoruz",
+        body: "Hizmeti güvenle çalıştırmak için gereken anonim teknik bilgiler: örneğin bir isteğin gerçekleştiği, ne kadar sürdüğü, kabaca dosya boyutu ve başarılı olup olmadığı. Buna hiçbir zaman mektubunuzun içeriği, adınız veya adresiniz dâhil değildir.",
+      },
+      {
+        heading: "Dil seçiminiz",
+        body: "Seçtiğiniz dil yalnızca kendi tarayıcınızda saklanır, böylece site bir dahaki sefere sizin dilinizde açılır. Bize gönderilmez.",
+      },
+      {
+        heading: "Reklam ve takip",
+        body: "Herhangi bir reklam göstermeden önce size sorarız. Hayır derseniz hiçbir reklam kodu yüklenmez — gizlenmez, ertelenmez, hiç istenmez. Evet derseniz reklamlar Google tarafından sunulur ve çerez kullanır. Her iki durumda da: mektuplarınız asla reklam için kullanılmaz, asla reklamverenlerle paylaşılmaz ve asla saklanmaz. Sizi takip eden analiz betiği ve oturum kaydı yoktur.",
+      },
+      {
+        heading: "Sorular ve haklarınız",
+        body: "AB Genel Veri Koruma Tüzüğü (GDPR) kapsamında erişim ve silme dâhil haklarınız vardır. Belge ve hesap saklamadığımız için hakkınızda bakabileceğimiz bir şey genellikle yoktur — ancak her zaman bize ulaşabilirsiniz.",
+      },
+    ],
+  },
+  termsPage: {
+    title: "Kullanım Koşulları ve Sorumluluk Reddi",
+    draftBadge: "Taslak — uzman hukuki inceleme bekliyor",
+    sections: [
+      {
+        heading: "Bu hizmet nedir",
+        body: "Welcome Deutschland, Almanca resmi mektupların içeriğini anlamanıza yardımcı olur. Bilgilendirme amacıyla yapay zekâ tarafından üretilmiş bir açıklama sunar.",
+      },
+      {
+        heading: "Bu hizmet ne değildir",
+        body: "Bir hukuk bürosu değildir, resmi bir kurum değildir ve hukuki danışmanlık değildir. Haklarınıza karar vermez, sonuç öngörmez ve nitelikli hukuk, göç, vergi veya sosyal danışmanlığın yerini almaz.",
+      },
+      {
+        heading: "Yapay zekâ hata yapabilir",
+        body: "Açıklama yapay zekâ tarafından üretilir. Özellikle düşük kaliteli fotoğraflarda belgeleri yanlış okuyabilir. Geçerli belge her zaman orijinal Almanca mektuptur. Önemli süreleri doğrulayın ve ciddi konularda nitelikli yardım alın.",
+      },
+      {
+        heading: "Sorumluluğunuz",
+        body: "Yalnızca yüklemeye hakkınız olan belgeleri yükleyin. Hukuki sonuç doğuran kararlarda bu hizmeti tek kaynağınız olarak kullanmayın.",
+      },
+    ],
+  },
+  aiPage: {
+    title: "Yapay zekâ nasıl çalışır — şeffaflık",
+    intro:
+      "Bu hizmetin açıklamalarını nasıl ürettiğini bilme hakkınız var. Bu sayfa konuyu dürüst ve kısa tutuyor.",
+    points: [
+      "Mektubunuz, sözleşmeli sağlayıcımızın işlettiği büyük bir dil modeli (yapay zekâ) tarafından okunur.",
+      "Yapay zekâya yalnızca mektubun gerçekten söylediğini bildirmesi, her sonucu destekleyen Almanca metni göstermesi ve bir şey belirsizse bunu açıkça söylemesi talimatı verilmiştir.",
+      "Yapay zekâya asla hukuki sonuç çıkarmaması ve ciddi mektupları nitelikli insan yardımı için işaretlemesi talimatı verilmiştir.",
+      "Bu güvencelere rağmen yapay zekâ metni yanlış anlayabilir. Sonucu iyi hazırlanmış bir açıklama olarak görün; onaylı bir çeviri veya danışmanlık olarak değil.",
+      "Mektubunuzu saklamıyoruz ve kendimiz asla herhangi bir şeyi eğitmek için kullanmıyoruz. Yapay zekâ sağlayıcısı ise ayrı bir konu: şu anda kullandığımız ücretsiz katmanda koşulları içeriği saklamalarına ve modellerini onunla geliştirmelerine izin veriyor. Gizlilik bildirimi bunu ayrıntılı açıklıyor.",
+    ],
+  },
+  impressumPage: {
+    title: "Künye (Impressum)",
+    placeholder:
+      "Alman hukukunun gerektirdiği şekilde (§ 5 DDG), hizmet sağlayıcı bilgileri (Impressum) kamuya açılıştan önce burada yayımlanacaktır.",
+    legalBasis: "§ 5 DDG (Dijital Hizmetler Kanunu) uyarınca hizmet sağlayıcı bilgileri.",
+  },
   donate: {
     label: "Bu siteyi destekleyin",
     note: "Bu hizmet ücretsizdir ve ücretsiz kalacaktır. Bağışlar masrafların karşılanmasına yardımcı olur — mektubunuzla ilgili hiçbir şeyi ya da aldığınız yanıtı değiştirmez.",
+  },
+  consent: {
+    title: "Bu sitede reklam gösterebilir miyiz?",
+    body: "Reklamlar bu hizmetin masraflarını karşılamaya yardımcı olur. Google tarafından sunulur ve çerez kullanır. Mektuplarınız asla reklam için kullanılmaz, asla reklamverenlere gönderilmez ve asla saklanmaz — bu iki durumda da değişmez. Hayır diyebilirsiniz ve her şey tamamen aynı şekilde çalışmaya devam eder.",
+    accept: "Evet, reklamlara izin ver",
+    reject: "Hayır, reklam istemiyorum",
+    more: "Verilerinizle ne yaptığımızı okuyun",
   },
   footer: {
     guides: "Mektup rehberleri",
