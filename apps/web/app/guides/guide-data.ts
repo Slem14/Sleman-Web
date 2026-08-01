@@ -1,5 +1,6 @@
 import { arGuides } from "./ar";
 import { trGuides } from "./tr";
+import { ruGuides } from "./ru";
 import { ukGuides } from "./uk";
 
 /**
@@ -41,7 +42,7 @@ import { ukGuides } from "./uk";
  *
  * Add a locale here only together with its translated text.
  */
-export const GUIDE_LOCALES = ["en", "ar", "tr", "uk"] as const;
+export const GUIDE_LOCALES = ["en", "ar", "tr", "uk", "ru"] as const;
 
 export function hasGuides(locale: string): boolean {
   return (GUIDE_LOCALES as readonly string[]).includes(locale);
@@ -99,6 +100,7 @@ const TRANSLATIONS: Record<string, GuideTranslations> = {
   ar: arGuides,
   tr: trGuides,
   uk: ukGuides,
+  ru: ruGuides,
 };
 
 export const GUIDES: Guide[] = [
