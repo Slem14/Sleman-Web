@@ -1,8 +1,10 @@
 import { arGuides } from "./ar";
 import { trGuides } from "./tr";
 import { faGuides } from "./fa";
+import { kuGuides } from "./ku";
 import { prsGuides } from "./prs";
 import { psGuides } from "./ps";
+import { tiGuides } from "./ti";
 import { ruGuides } from "./ru";
 import { ukGuides } from "./uk";
 
@@ -45,7 +47,7 @@ import { ukGuides } from "./uk";
  *
  * Add a locale here only together with its translated text.
  */
-export const GUIDE_LOCALES = ["en", "ar", "tr", "uk", "ru", "prs", "fa", "ps"] as const;
+export const GUIDE_LOCALES = ["en", "ar", "tr", "uk", "ru", "prs", "fa", "ps", "ku", "ti"] as const;
 
 export function hasGuides(locale: string): boolean {
   return (GUIDE_LOCALES as readonly string[]).includes(locale);
@@ -107,6 +109,8 @@ const TRANSLATIONS: Record<string, GuideTranslations> = {
   prs: prsGuides,
   fa: faGuides,
   ps: psGuides,
+  ku: kuGuides,
+  ti: tiGuides,
 };
 
 export const GUIDES: Guide[] = [

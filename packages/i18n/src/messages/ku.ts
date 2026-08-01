@@ -146,6 +146,10 @@ export const ku: PartialMessages = {
     unavailableText:
       "Em niha nikarin bigihîjin xizmeta analîzê. Ji kerema xwe piştî demekê biceribînin.",
   },
+  guidesPage: {
+    title: "Nameyên almanî yên berbelav — ravekirin",
+    lead: "Ev rûpel rave dikin ku her cureyê nameyê çi ye û bi gelemperî çi dixwaze. Ev ravekirinên giştî ne, ne şêwirmendî li ser doza we ya kesane.",
+  },
   footer: {
     privacy: "Nepenîtî",
     terms: "Mercan û redkirin",
